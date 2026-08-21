@@ -1,0 +1,14 @@
+{
+  "mode": "alias",
+  "forbidden_substrings": ["fable"],
+  "aliases": { "opus": "opus", "sonnet": "sonnet", "haiku": "haiku" },
+  "pinned": { "opus": "claude-opus-5", "sonnet": "claude-sonnet-5", "haiku": "claude-haiku-4-5" },
+  "classes": { "deep": "opus", "standard": "sonnet", "economy": "haiku" },
+  "session": { "model": "opus", "effort": "max" },
+  "agents": {
+    "session-orchestrator": { "class": "deep",     "effort": "high" },
+    "builder":              { "class": "deep",     "effort": "high" },
+    "verifier":             { "class": "standard", "effort": "medium" },
+    "security":             { "class": "standard", "effort": "high" }
+  }
+}
