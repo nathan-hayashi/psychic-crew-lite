@@ -27,8 +27,21 @@ ROWS=$(awk '/^# SYNC-MAP/{f=1;next} f&&/^```/{exit} f&&NF' "$MAP" 2>/dev/null)
 
 while IFS="$(printf '\t')" read -r rel ppath lpath; do
   [ -n "${rel:-}" ] || continue
-  # Every parent path must still exist, whatever the relation. A DROPPED row whose parent vanished
-  # is a decision about something that no longer exists.
+  # ADDED is the one relation with no parent side: a Lite-first artifact. Checked first, because
+  # the parent-path rule below would otherwise fail every one of them on a path that is meant to
+  # be absent.
+  if [ "$rel" = "ADDED" ]; then
+    if [ "$ppath" != "—" ] && [ -n "$ppath" ]; then
+      fail "ADDED row names a parent path ($ppath); use MIRRORED or ADAPTED"
+    elif [ -e "$lpath" ]; then
+      pass "ADDED, Lite-first and declared — $lpath"
+    else
+      fail "ADDED: lite path missing — $lpath"
+    fi
+    continue
+  fi
+  # Every parent path must still exist for every other relation. A DROPPED row whose parent
+  # vanished is a decision about something that no longer exists.
   if [ ! -e "$PARENT/$ppath" ]; then
     fail "$rel: parent path gone — $ppath"
     continue
@@ -59,6 +72,22 @@ while IFS="$(printf '\t')" read -r rel ppath lpath; do
 done <<EOF
 $ROWS
 EOF
+
+# Vocabulary parity, a targeted byte-check inside an ADAPTED file. security.md was MIRRORED until
+# L1 and was reclassified because byte-identity shipped references to an arbiter this build does
+# not have. What mattered about MIRRORED was not the whole file — it was that two builds exchanging
+# findings must agree on what `crit` means. So the severity ROWS are pinned even though the file is
+# not, and the parity is asserted rather than trusted.
+sev_l=$(grep -E '^\| `(crit|high|med|low)` \|' .claude/rules/security.md 2>/dev/null | sort)
+sev_p=$(grep -E '^\| `(crit|high|med|low)` \|' "$PARENT/.claude/rules/security.md" 2>/dev/null | sort)
+# Vacuity guard: two empty extractions are identical, and that would silently switch this off.
+if [ "$(printf '%s\n' "$sev_l" | grep -c .)" -ne 4 ] || [ "$(printf '%s\n' "$sev_p" | grep -c .)" -ne 4 ]; then
+  fail "severity table did not parse on one side (lite:$(printf '%s\n' "$sev_l" | grep -c .) parent:$(printf '%s\n' "$sev_p" | grep -c .)) — parity below would be vacuous"
+elif [ "$sev_l" = "$sev_p" ]; then
+  pass "severity vocabulary byte-identical to the parent (4 rows) despite security.md being ADAPTED"
+else
+  fail "SEVERITY VOCABULARY DIVERGED — the two builds no longer mean the same thing by crit/high/med/low"
+fi
 
 printf '\n== check-sync: %s PASS / %s FAIL / %s REVIEW ==\n' "$P" "$F" "$W"
 [ "$F" = 0 ] || exit 1

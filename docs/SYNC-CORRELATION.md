@@ -10,10 +10,15 @@ mechanism, and `scripts/check-sync.sh` is what stops it becoming documentation t
 | `MIRRORED` | must stay byte-identical | content hash compared; **divergence FAILS** |
 | `ADAPTED` | Lite deliberately differs | parent path must exist; a change upstream raises a **review obligation**, not a failure |
 | `DROPPED` | considered absence | parent path must exist; recorded so nobody re-adds it by accident |
+| `ADDED` | Lite-only, no parent counterpart | lite path must exist; recorded so a Lite-first artifact is declared rather than invisible |
 
 **Direction is one-way by default: parent → Lite.** The parent is the mature build; Lite inherits.
-A Lite-first change is permitted but must be back-ported or reclassified `ADAPTED`, never left as
-undeclared drift.
+A Lite-first change is permitted but must be declared `ADDED`, never left as undeclared drift.
+
+`ADDED` was introduced at L1 because the map had a hole its own rule forbade: every relation
+required a parent path, so a Lite-only artifact could not have a row at all. `release-protocol.md`
+had been sitting outside the map since L0 for exactly that reason — declared nowhere, by a map whose
+purpose is that nothing is undeclared.
 
 The parent repo is located via `$PSYCHIC_CREW_PARENT`, defaulting to `$HOME/projects/psychic-crew`.
 No absolute machine path appears in this file or in the check — the parent build burned two red
@@ -26,7 +31,7 @@ decoration — change a row and the check changes with it.
 
 ```text
 # SYNC-MAP v1
-MIRRORED	.claude/rules/security.md	.claude/rules/security.md
+ADAPTED	.claude/rules/security.md	.claude/rules/security.md
 MIRRORED	.claude/rules/fallback-protocol.md	.claude/rules/fallback-protocol.md
 MIRRORED	.gitattributes	.gitattributes
 ADAPTED	.claude/rules/model-policy.md	.claude/rules/model-policy.md
@@ -40,6 +45,26 @@ DROPPED	.claude/agents/lead-planner.md	—
 DROPPED	.claude/agents/quality-reviewer.md	—
 DROPPED	.claude/agents/integration-runner.md	—
 DROPPED	.claude/rules/arbiter-protocol.md	—
+ADAPTED	hooks/_common.sh	hooks/_common.sh
+ADAPTED	hooks/bash-blocker.sh	hooks/bash-blocker.sh
+ADAPTED	hooks/model-guard.sh	hooks/model-guard.sh
+ADAPTED	hooks/sensitive-guard.sh	hooks/sensitive-guard.sh
+ADAPTED	hooks/stop.sh	hooks/stop.sh
+ADAPTED	hooks/session-start.sh	hooks/session-start.sh
+ADAPTED	.claude/settings.json	.claude/settings.json
+ADAPTED	scripts/validate-crew.sh	scripts/validate-lite.sh
+ADDED	—	.claude/rules/release-protocol.md
+ADDED	—	hooks/release-guard.sh
+ADDED	—	scripts/check-sync.sh
+ADDED	—	docs/SYNC-CORRELATION.md
+DROPPED	hooks/audit-logger.sh	—
+DROPPED	hooks/auto-format.sh	—
+DROPPED	hooks/provenance-flag.sh	—
+DROPPED	hooks/notify.sh	—
+DROPPED	hooks/error-recovery.sh	—
+DROPPED	hooks/reference-cap.sh	—
+DROPPED	hooks/subagent-start.sh	—
+DROPPED	hooks/pre-compact-checkpoint.sh	—
 ```
 
 ## Why each DROPPED row is a decision, not an omission
@@ -55,7 +80,17 @@ DROPPED	.claude/rules/arbiter-protocol.md	—
 
 ## Not yet mapped
 
-`hooks/`, `scripts/validate-crew.sh`, `scripts/run-crew-tests.sh`, `scripts/save-context.sh` and
-`.claude/skills/intake/` are **L1 and later**. They are absent from the map on purpose — a map row
-for a file Lite does not have yet would fail the check for the wrong reason. Add the row and the
-file in the same phase.
+`hooks/` and `scripts/validate-crew.sh` **arrived at L1** and are mapped above.
+
+Still absent on purpose: `scripts/run-crew-tests.sh`, `scripts/save-context.sh` and
+`.claude/skills/intake/`. A map row for a file Lite does not have yet would fail the check for the
+wrong reason. Add the row and the file in the same phase.
+
+### Why eight parent hooks are DROPPED
+
+`audit-logger` · `auto-format` · `provenance-flag` · `notify` · `error-recovery` · `reference-cap` ·
+`subagent-start` · `pre-compact-checkpoint`. The first four are convenience rather than enforcement.
+`reference-cap` and `subagent-start` police a dispatch topology Lite does not have — there is no
+arbiter to bypass and no broker to cap. `pre-compact-checkpoint` belongs with the continuity layer
+at L3 and is a deferral, not a rejection; it is recorded here so it is decided rather than
+forgotten.
