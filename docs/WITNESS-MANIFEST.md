@@ -43,8 +43,9 @@ W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	1f035a0ac95a0bd4
 W-12	hooks/sensitive-guard.sh	writes to .env/secrets are blocked	4489ddd39bc978cd
 W-13	scripts/validate-lite.sh	denial records carry an L-series phase	521a7da53f67533e
 W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	3acec08bf3f18d12
-W-15	scripts/verify.sh	rolling-median	b6f6c89ecb2b9024
+W-15	scripts/verify.sh	rolling-median	bda59c4e7f29960b
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	39df0904728c69dc
+W-17	scripts/verify.sh	history did NOT record	bda59c4e7f29960b
 ```
 
 The fenced header above is `WITNESS-MANIFEST v1` and the extractor anchors on that exact versioned
@@ -73,3 +74,4 @@ fields naming a file that exists.
 | `W-14` | Every tracked machinery file is **declared** in the sync map. `ADDED` made declaring possible; this makes it required. |
 | `W-15` | Regression is judged against a **rolling median**, not the last run, so one noisy run is not a regression. |
 | `W-16` | A marker surviving only in a comment is reported as its own failure — the shape the parent's audit actually found. |
+| `W-17` | The history write is **confirmed to have landed**. It once reported success while appending nothing. |

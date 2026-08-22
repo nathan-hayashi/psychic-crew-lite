@@ -34,6 +34,6 @@
 - **Layer 2:** `docs/WITNESS-MANIFEST.md` + `check-witness.sh` — **16 attested corrections**, markers searched in comment-stripped code, each pinned to a file hash. STALE (exit 2) is distinct from FAIL (exit 1).
 - **Layer 3:** `docs/verification-history.jsonl` + `verify.sh --record` — tracked, append-only, commit-stamped, rolling median over 5 runs with a stated signal threshold.
 - **Also closed:** map completeness — every tracked file under `hooks/ scripts/ .claude/` must be declared (21 files).
-- **Verified:** verify.sh reports layer1 **24/1/0** · sync **41/0** · layer2 **16/0/0** · no signal.
-- **Controls:** 9 external (5 layer-2, 3 layer-3, 1 completeness) plus the in-suite behavioural set. All fired.
+- **Verified:** verify.sh reports layer1 **24/1/0** · sync **41/0** · layer2 **17/0/0** · no signal.
+- **Controls:** 10 external (5 layer-2, 4 layer-3, 1 completeness) plus the in-suite behavioural set. All fired.
 - **Next action:** await `APPROVE GATE-L2` to close L2. L3 is continuity: ledgers, distillation, checkpoint/restore, stall detection (§6), including `pre-compact-checkpoint` which L1 recorded as a deferral to here.

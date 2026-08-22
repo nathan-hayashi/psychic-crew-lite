@@ -74,9 +74,17 @@ else
 fi
 
 if [ "$REC" = 1 ]; then
+  # `grep -c` prints 0 AND exits 1 on no match, so `grep -c . || echo 0` yields "0\n0" — which is
+  # not valid JSON, so --argjson failed, jq produced nothing, and this step reported "recorded"
+  # while writing NOTHING. On a clean tree, which is the normal case at a gate. Third time this
+  # idiom has bitten in this project and the first time it silently emptied an audit record.
+  ndirty=$(git status --porcelain 2>/dev/null | grep -c . 2>/dev/null) || true
+  case "$ndirty" in ''|*[!0-9]*) ndirty=0 ;; esac
+  before=$(grep -c . "$HIST" 2>/dev/null) || true
+  case "$before" in ''|*[!0-9]*) before=0 ;; esac
   jq -cn --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
          --arg c "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" \
-         --argjson dirty "$(git status --porcelain 2>/dev/null | grep -c . || echo 0)" \
+         --argjson dirty "$ndirty" \
          --argjson l1p "$l1p" --argjson l1s "$l1s" --argjson l1f "$l1f" \
          --argjson syp "$syp" --argjson syf "$syf" \
          --argjson w2o "$w2o" --argjson w2s "$w2s" --argjson w2f "$w2f" \
@@ -84,7 +92,20 @@ if [ "$REC" = 1 ]; then
       layer1:{pass:$l1p,skip:$l1s,fail:$l1f},
       sync:{pass:$syp,fail:$syf},
       layer2:{ok:$w2o,stale:$w2s,fail:$w2f}}' >> "$HIST"
-  printf '  recorded to %s (%s entries)\n' "$HIST" "$(grep -c . "$HIST" 2>/dev/null)"
+  # CONFIRM THE LINE LANDED. This build's own release protocol requires exactly this of an audit
+  # write — re-read it and match it — and the reason is the bug above: the append failed while the
+  # step reported success. An audit layer that cannot tell you it did not record is worse than none.
+  after=$(grep -c . "$HIST" 2>/dev/null) || true
+  case "$after" in ''|*[!0-9]*) after=0 ;; esac
+  if [ "$after" -le "$before" ]; then
+    printf '  [FAIL]  history did NOT record — %s still has %s entries\n' "$HIST" "$after"
+    sig="$sig RECORD-FAILED"
+  elif ! tail -1 "$HIST" | jq -e '.commit and .layer1.pass' >/dev/null 2>&1; then
+    printf '  [FAIL]  history line landed but does not parse or lacks required fields\n'
+    sig="$sig RECORD-MALFORMED"
+  else
+    printf '  recorded to %s (%s entries, was %s)\n' "$HIST" "$after" "$before"
+  fi
 else
   printf '  not recorded — pass --record to append a bisectable line\n'
 fi
