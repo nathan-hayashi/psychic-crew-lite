@@ -56,3 +56,11 @@
 - **Verified at close:** verify.sh layer1 **31/1/0** · sync **47/0** · distill **11/0** · layer2 **23/0/0** · no signal. Phase moved L2 -> L3 on the approved row alone; orientation reports it without being told.
 - **Delivered:** checkpoint/restore, declared-binding distillation, stall detection that needs two stores, the watched watchdog, Seance, orientation.
 - **Next action:** L4 — the stress phase. One end-to-end build across all four agents exercising the cross-release law, and the first real traffic in `logs/release-audit.jsonl`. This is the first LIVE test of the release law: until now it has been guarded and asserted, never run.
+
+## [L4|2026-08-22T22:23:47Z] L4 STRESS COMPLETE — awaiting the closing token
+- **Ran:** `scripts/stress.sh` — **14 PASS / 0 FAIL** across four roles, two blind security passes, two seeded defects, answer key fixed pre-run.
+- **Verified:** verify.sh layer1 **31/1/0** · sync **50/0** · distill **11/0** · stress **14/0** · layer2 **28/0/0** · no signal.
+- **Controls:** 4 against the harness (blindness breach, broken ordering, duplicate finding, guard bypassed) plus the live self-release refusal inside the run. All fired.
+- **Two defects of my own:** the harness truncated the LIVE release trail (C-13); fixing that exposed a vacuous PASS on an empty trail in the check guarding the release law. Both fixed and controlled; the trail clearing is recorded, not silent.
+- **Stated limit:** the four agents are not dispatched as subagents here — this session's project directory is the parent repo. The harness stands in and says so.
+- **Next action:** await `APPROVE GATE-L4` to close L4 and the Lite build.

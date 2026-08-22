@@ -67,6 +67,9 @@ ADAPTED	scripts/save-context.sh	scripts/distill.sh
 ADAPTED	context/session-summary.md	context/session-summary.md
 ADDED	—	scripts/continuity.sh
 ADDED	—	context/CLAIMS.md
+ADAPTED	stress-project/README.md	stress/DEFECTS.md
+ADDED	—	scripts/stress.sh
+ADDED	—	stress/normalize.sh
 DROPPED	hooks/audit-logger.sh	—
 DROPPED	hooks/auto-format.sh	—
 DROPPED	hooks/provenance-flag.sh	—

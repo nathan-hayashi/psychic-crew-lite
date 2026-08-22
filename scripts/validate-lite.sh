@@ -181,10 +181,14 @@ sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'write divergence, not a stall
 echo
 echo "== E. release trail =="
 TRAIL="logs/release-audit.jsonl"
-if [ ! -f "$TRAIL" ]; then
-  sk "no release trail yet — no dispatches have run under this build"
+n=0; [ -f "$TRAIL" ] && n=$(grep -c . "$TRAIL" 2>/dev/null); n=${n:-0}
+# An EMPTY trail is not a clean trail. "no self-release in 0 lines" is trivially true, and this
+# section reported exactly that as a PASS the moment the stress harness stopped writing here —
+# a vacuous pass in the check guarding this build's central law. Absent and empty are the same
+# answer and both are announced, never passed.
+if [ "$n" = 0 ]; then
+  sk "release trail is absent or empty — no dispatch has released anything, so the law below is untested here (stress runs are run-scoped by design)"
 else
-  n=$(grep -c . "$TRAIL")
   selfn=$(jq -r 'select(.from_agent == .released_by) | .task_id' "$TRAIL" 2>/dev/null | tr '\n' ' ')
   [ -z "$selfn" ] && ok "no self-release in $n trail lines" || no "SELF-RELEASE in trail for task_id(s): $selfn"
   noidn=$(jq -r 'select((.task_id // "") == "") | .ts' "$TRAIL" 2>/dev/null | tr '\n' ' ')

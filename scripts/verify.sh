@@ -34,6 +34,10 @@ run "layer 1b — parent correlation" "./scripts/check-sync.sh"
 syp=$(printf '%s' "$OUT" | grep -oE '[0-9]+ PASS' | head -1 | grep -oE '[0-9]+')
 syf=$(printf '%s' "$OUT" | grep -oE '[0-9]+ FAIL' | head -1 | grep -oE '[0-9]+')
 
+run "layer 1d — end-to-end stress (release law under traffic)" "./scripts/stress.sh"
+stp=$(printf '%s' "$OUT" | grep -oE '[0-9]+ PASS' | head -1 | grep -oE '[0-9]+')
+stf=$(printf '%s' "$OUT" | grep -oE '[0-9]+ FAIL' | head -1 | grep -oE '[0-9]+')
+
 run "layer 1c — distilled-state fidelity" "./scripts/distill.sh check"
 dsp=$(printf '%s' "$OUT" | grep -oE '[0-9]+ PASS' | head -1 | grep -oE '[0-9]+')
 dsf=$(printf '%s' "$OUT" | grep -oE '[0-9]+ FAIL' | head -1 | grep -oE '[0-9]+')
@@ -43,7 +47,7 @@ w2o=$(printf '%s' "$OUT" | grep -oE '[0-9]+ OK' | head -1 | grep -oE '[0-9]+')
 w2s=$(printf '%s' "$OUT" | grep -oE '[0-9]+ STALE' | head -1 | grep -oE '[0-9]+')
 w2f=$(printf '%s' "$OUT" | grep -oE '[0-9]+ FAIL' | head -1 | grep -oE '[0-9]+')
 
-: "${dsp:=0}" "${dsf:=0}"
+: "${dsp:=0}" "${dsf:=0}" "${stp:=0}" "${stf:=0}"
 : "${l1p:=0}" "${l1s:=0}" "${l1f:=0}" "${syp:=0}" "${syf:=0}" "${w2o:=0}" "${w2s:=0}" "${w2f:=0}"
 
 printf '\n== layer 3 — temporal history ==\n'
@@ -65,7 +69,7 @@ fi
 # Written as explicit ifs, not an `A || B && C` chain: that chain binds left to right and quietly
 # assigns on the wrong branch, which is a bug in the code that decides whether anything is wrong.
 sig=""
-if [ "$l1f" -gt 0 ] || [ "$syf" -gt 0 ] || [ "$w2f" -gt 0 ] || [ "$dsf" -gt 0 ]; then sig="$sig FAIL"; fi
+if [ "$l1f" -gt 0 ] || [ "$syf" -gt 0 ] || [ "$w2f" -gt 0 ] || [ "$dsf" -gt 0 ] || [ "$stf" -gt 0 ]; then sig="$sig FAIL"; fi
 if [ "$w2s" -gt 0 ]; then sig="$sig STALE"; fi
 if [ -n "$med" ]; then
   if [ "$l1p" -lt "$med" ]; then
@@ -115,7 +119,7 @@ else
   printf '  not recorded — pass --record to append a bisectable line\n'
 fi
 
-printf '\n== verify: layer1 %s/%s/%s · sync %s/%s · distill %s/%s · layer2 %s/%s/%s ==\n' \
-       "$l1p" "$l1s" "$l1f" "$syp" "$syf" "$dsp" "$dsf" "$w2o" "$w2s" "$w2f"
+printf '\n== verify: layer1 %s/%s/%s · sync %s/%s · distill %s/%s · stress %s/%s · layer2 %s/%s/%s ==\n' \
+       "$l1p" "$l1s" "$l1f" "$syp" "$syf" "$dsp" "$dsf" "$stp" "$stf" "$w2o" "$w2s" "$w2f"
 if [ -n "$sig" ]; then printf '== SIGNAL:%s ==\n' "$sig"; exit 1; fi
 printf '== no signal ==\n'

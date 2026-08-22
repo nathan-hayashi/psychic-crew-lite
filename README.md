@@ -43,6 +43,7 @@ documentation that rots, which is the failure the parent build kept recording.
 ./scripts/validate-lite.sh   # layer 1a: wiring, model policy, hygiene, guards firing for real
 ./scripts/check-witness.sh   # layer 2: every attested correction still holds
 ./scripts/distill.sh check   # layer 1c: the distilled summary matches its sources
+./scripts/stress.sh          # layer 1d: the release law end to end, under traffic
 
 ./scripts/continuity.sh orient          # discover your own state from disk
 ./scripts/continuity.sh stalls          # stall detection, never from one store
@@ -127,11 +128,32 @@ Here every number is declared in `context/CLAIMS.md` and compared to its source 
 with no declared binding fails**. Adding an unbound claim is what breaks, rather than something
 nobody notices for three sessions.
 
+## The stress run
+
+`./scripts/stress.sh` drives one end-to-end pass across all four roles against a subject with two
+seeded defects and an answer key fixed **before** the run.
+
+**What it proves.** The cross-release law under traffic — `released_by ≠ from_agent`, enforced by
+the shipped hook rather than by the harness, which routes every candidate line through
+`hooks/release-guard.sh` and appends only what the guard permits. Blindness as a property of the
+**payload**: pass 2's dispatch is checked to contain nothing from pass 1. Ordering, the audit
+schema, and coverage correlated by `task_id` identity rather than count. A self-release is attempted
+live inside the run and refused.
+
+**What it does not prove.** That a model would find these defects. The findings are fixture data
+scored against the answer key; what is under test is the machinery this build built, not the
+reviewer. Real agent traffic needs the four agents dispatched with this repo as the project
+directory — the harness stands in for that and says so.
+
+The two seeded defects are chosen so a single lens plausibly catches one and misses the other, which
+is why the run asserts the passes found **different** ones: a second pass that finds what the first
+found bought nothing.
+
+Stress runs are **run-scoped** under `logs/stress/<run>/`. The live trail is never written by a
+fixture — mixing fixture and real releases in one file leaves no reader able to tell them apart.
+
 ## Status
 
-**L3 complete.** Scaffold, enforcement, verification, continuity. Seven wired hooks, 23 attested
-corrections, a bisectable history, and a distilled state that cannot drift from its sources without
-saying so.
-
-L4 is the stress phase: one end-to-end build exercising all four agents and the cross-release law —
-also the first time `logs/release-audit.jsonl` carries real traffic.
+**L4 complete — the build is closed.** Scaffold, enforcement, verification, continuity, stress.
+Seven wired hooks, 28 attested corrections, a bisectable history, a distilled state that cannot
+drift from its sources without saying so, and the release law exercised end to end.
