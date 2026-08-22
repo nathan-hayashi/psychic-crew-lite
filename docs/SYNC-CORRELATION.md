@@ -61,6 +61,12 @@ ADDED	—	scripts/check-witness.sh
 ADDED	—	scripts/verify.sh
 ADDED	—	docs/WITNESS-MANIFEST.md
 ADDED	—	docs/verification-history.jsonl
+ADAPTED	hooks/pre-compact-checkpoint.sh	hooks/pre-compact-checkpoint.sh
+ADAPTED	scripts/restore-context.sh	scripts/restore-context.sh
+ADAPTED	scripts/save-context.sh	scripts/distill.sh
+ADAPTED	context/session-summary.md	context/session-summary.md
+ADDED	—	scripts/continuity.sh
+ADDED	—	context/CLAIMS.md
 DROPPED	hooks/audit-logger.sh	—
 DROPPED	hooks/auto-format.sh	—
 DROPPED	hooks/provenance-flag.sh	—
@@ -90,8 +96,12 @@ DROPPED	hooks/pre-compact-checkpoint.sh	—
 (verification layer 2), the three-layer entry point, and the temporal history (layer 3). None has a
 parent counterpart — the parent has layers 1 and a hand-rolled 2, and no layer 3 at all.
 
-Still absent on purpose: `scripts/run-crew-tests.sh`, `scripts/save-context.sh` and
-`.claude/skills/intake/`. A map row for a file Lite does not have yet would fail the check for the
+**L3 mapped the continuity layer.** `save-context.sh` is ADAPTED to `distill.sh` — same role,
+but bindings are declared rather than hand-written, so an unbound claim fails. `continuity.sh` and
+`context/CLAIMS.md` are ADDED: the parent has no stall detection, no watched watchdog and no
+Seance.
+
+Still absent on purpose: `scripts/run-crew-tests.sh` and `.claude/skills/intake/`. A map row for a file Lite does not have yet would fail the check for the
 wrong reason. Add the row and the file in the same phase.
 
 ### Why eight parent hooks are DROPPED

@@ -31,8 +31,8 @@ exercises this block, so it is data rather than decoration.
 # WITNESS-MANIFEST v1
 W-01	scripts/apply-models.sh	HITS="$HITS [$a -> $r]"	42cc93b744ad31d9
 W-02	hooks/model-guard.sh	. as $r	fde327eab7f92e8a
-W-03	scripts/validate-lite.sh	class resolution produced a model for all	521a7da53f67533e
-W-04	scripts/validate-lite.sh	every tracked hook is wired	521a7da53f67533e
+W-03	scripts/validate-lite.sh	class resolution produced a model for all	b41688776a9456a0
+W-04	scripts/validate-lite.sh	every tracked hook is wired	b41688776a9456a0
 W-05	hooks/_common.sh	PHASE="L?"	c6ad08a77c06404e
 W-06	hooks/_common.sh	deny-audit.jsonl	c6ad08a77c06404e
 W-07	hooks/release-guard.sh	released_by equals from_agent	411e4706d4470b62
@@ -41,11 +41,17 @@ W-09	scripts/check-sync.sh	ADDED row names a parent path	a2abbddf75cf9d86
 W-10	scripts/check-sync.sh	every comparison below would be vacuous	a2abbddf75cf9d86
 W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	1f035a0ac95a0bd4
 W-12	hooks/sensitive-guard.sh	writes to .env/secrets are blocked	4489ddd39bc978cd
-W-13	scripts/validate-lite.sh	denial records carry an L-series phase	521a7da53f67533e
+W-13	scripts/validate-lite.sh	denial records carry an L-series phase	b41688776a9456a0
 W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	a2abbddf75cf9d86
-W-15	scripts/verify.sh	rolling-median	bda59c4e7f29960b
+W-15	scripts/verify.sh	rolling-median	701e3e82d9cc7ba7
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	39df0904728c69dc
-W-17	scripts/verify.sh	history did NOT record	bda59c4e7f29960b
+W-17	scripts/verify.sh	history did NOT record	701e3e82d9cc7ba7
+W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	b41688776a9456a0
+W-19	scripts/continuity.sh	write divergence, not a stall	bd26005d09a54d2d
+W-20	scripts/continuity.sh	-path ./logs -prune	bd26005d09a54d2d
+W-21	scripts/continuity.sh	may not run its own stall check	bd26005d09a54d2d
+W-22	scripts/distill.sh	UNBOUND claim(s) in the summary	0888230f5ae8f667
+W-23	scripts/distill.sh	unknown extractor	0888230f5ae8f667
 ```
 
 The fenced header above is `WITNESS-MANIFEST v1` and the extractor anchors on that exact versioned
@@ -75,3 +81,9 @@ fields naming a file that exists.
 | `W-15` | Regression is judged against a **rolling median**, not the last run, so one noisy run is not a regression. |
 | `W-16` | A marker surviving only in a comment is reported as its own failure — the shape the parent's audit actually found. |
 | `W-17` | The history write is **confirmed to have landed**. It once reported success while appending nothing. |
+| `W-18` | The checkpoint carries the prior next action **verbatim**. The parent's version displaced it with its own pointer, degrading the field it exists to protect. |
+| `W-19` | A stall is never declared from one store — a stale heartbeat beside live activity is divergence. |
+| `W-20` | The two stores are **independent**: the activity scan excludes `logs/`, where heartbeats are written. Without this, STALL is unreachable. |
+| `W-21` | The orchestrator may not run its own stall check — the watchdog is watched by a party with no stake. |
+| `W-22` | A number in the summary with no declared binding **fails**. Fidelity is not a property you finish. |
+| `W-23` | Extractors are named in the script; a manifest that could specify shell would be an injection surface. |

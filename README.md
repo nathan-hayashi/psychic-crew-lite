@@ -42,6 +42,12 @@ documentation that rots, which is the failure the parent build kept recording.
 ./scripts/check-sync.sh      # layer 1b: parent correlation, and map completeness
 ./scripts/validate-lite.sh   # layer 1a: wiring, model policy, hygiene, guards firing for real
 ./scripts/check-witness.sh   # layer 2: every attested correction still holds
+./scripts/distill.sh check   # layer 1c: the distilled summary matches its sources
+
+./scripts/continuity.sh orient          # discover your own state from disk
+./scripts/continuity.sh stalls          # stall detection, never from one store
+./scripts/continuity.sh seance <query>  # query the predecessor's events, not its summary
+./scripts/restore-context.sh            # forward-resume after a compaction
 ```
 
 Set `PSYCHIC_CREW_PARENT` if the parent repo is not at `$HOME/projects/psychic-crew`.
@@ -98,10 +104,34 @@ single noisy run is not a regression. The signal threshold is stated in `verify.
 implied: any `FAIL`, any `STALE`, or a layer-1 pass count *below* the median. Counts going up is
 expected and quiet.
 
+## Continuity
+
+Disk is canonical; a context window is a cache.
+
+**A stall is never declared from a single store.** A stale heartbeat beside live filesystem activity
+is heartbeat-write *divergence*, not a stuck agent — gastown learned that from a false escalation and
+this build inherits the lesson without paying for it. The two stores are genuinely independent: the
+activity scan excludes `logs/`, because that is where heartbeats are written, and without that
+exclusion `STALL` can never fire at all.
+
+**The watchdog is itself watched.** `session-orchestrator` may not run its own stall check; the chain
+terminates at `verifier`, which has no stake in the answer.
+
+**Seance** lets a successor session query its predecessor's *events* rather than inherit a summary.
+Distillation loses detail by design — that is what makes it useful, and what makes this necessary.
+
+**Distillation is checked for fidelity, not tidiness.** The parent's equivalent asserted the summary
+had no absolute paths, no raw logs and a next action: twenty assertions, every one a property of the
+file alone, all passing for three days against a summary that dated a gate to the wrong timestamp.
+Here every number is declared in `context/CLAIMS.md` and compared to its source — and **a number
+with no declared binding fails**. Adding an unbound claim is what breaks, rather than something
+nobody notices for three sessions.
+
 ## Status
 
-**L2 complete.** Scaffold, enforcement, and verification. Six hooks, 16 attested corrections, and a
-bisectable history.
+**L3 complete.** Scaffold, enforcement, verification, continuity. Seven wired hooks, 23 attested
+corrections, a bisectable history, and a distilled state that cannot drift from its sources without
+saying so.
 
-L3 is continuity — ledgers, distillation, checkpoint/restore, stall detection. L4 is one end-to-end
-build exercising all four agents and the cross-release law.
+L4 is the stress phase: one end-to-end build exercising all four agents and the cross-release law —
+also the first time `logs/release-audit.jsonl` carries real traffic.

@@ -43,3 +43,10 @@
 - **Verified at close:** verify.sh layer1 **24/1/0** · sync **41/0** · layer2 **17/0/0** · no signal. Parent unchanged and green at 165 / 43+1SKIP.
 - **Swept, negative result:** the `grep -c` fallback idiom is not present in the parent; its `wc -l` lookalikes are not the same defect. Both demonstrated, not reasoned.
 - **Next action:** L3 — continuity (§6): ledgers, distillation, checkpoint/restore, stall detection, the watchdog that is itself watched, and Seance. `pre-compact-checkpoint` is the deferral L1 recorded to here.
+
+## [L3|2026-08-22T22:10:36Z] L3 CONTINUITY COMPLETE — awaiting the closing token
+- **Built:** `pre-compact-checkpoint.sh` (the L1 deferral), `restore-context.sh`, `distill.sh` + `context/CLAIMS.md`, `continuity.sh` (heartbeat · stalls · orient · seance).
+- **Verified:** verify.sh layer1 **31/1/0** · sync **47/0** · distill **11/0** · layer2 **23/0/0** · no signal.
+- **Controls:** stall reachable and suppressed on the same input; three fidelity controls; four checkpoint assertions; the orchestrator refused its own stall check.
+- **Found and fixed in-flight:** store 2 observed store 1, making STALL unreachable; a full-width bar in an extractor; a stray quote from a triple-quote boundary; an over-strict completeness matcher.
+- **Next action:** await `APPROVE GATE-L3` to close L3. L4 is the stress phase — one end-to-end build across all four agents and the cross-release law, and the first real traffic in `logs/release-audit.jsonl`.

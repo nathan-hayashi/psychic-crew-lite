@@ -145,6 +145,40 @@ case "$ph" in *"L?"*) no "denial records carry the fail-closed phase sentinel ($
 rm -rf "$T"
 
 echo
+echo "== D2. continuity (L3, behavioural, temp root) =="
+CT=$(mktemp -d); mkdir -p "$CT/logs" "$CT/.claude/state"
+cp GATES.md "$CT/" 2>/dev/null
+printf '# P\n\n## [L2|t] c\n- **Next action:** SENTINEL-CARRY-FORWARD\n' > "$CT/PROGRESS.md"
+CLAUDE_PROJECT_DIR="$CT" ./hooks/pre-compact-checkpoint.sh >/dev/null 2>&1; ckrc=$?
+[ "$ckrc" = 0 ] && ok "pre-compact exits 0 (it must never block compaction)" \
+                || no "pre-compact exited $ckrc — it would block or fail a compaction"
+ls "$CT"/.claude/state/checkpoints/ckpt-*.md >/dev/null 2>&1 \
+  && ok "pre-compact wrote a numbered snapshot" || no "pre-compact wrote no snapshot"
+# The parent's version hardcoded a pointer here, which then BECAME the newest Next action line, so
+# the cold reader recovered the pointer instead of the instruction it displaced. The parachute
+# degraded the one field it exists to protect. Assert the prior action is carried VERBATIM.
+grep -qF 'SENTINEL-CARRY-FORWARD' "$CT/PROGRESS.md" \
+  && ok "pre-compact carried the prior next action forward verbatim" \
+  || no "pre-compact displaced the next action with its own pointer"
+chmod 400 "$CT/PROGRESS.md" 2>/dev/null
+CLAUDE_PROJECT_DIR="$CT" ./hooks/pre-compact-checkpoint.sh >/dev/null 2>&1; ckrc2=$?
+chmod 644 "$CT/PROGRESS.md" 2>/dev/null
+[ "$ckrc2" = 0 ] && ok "pre-compact still exits 0 with PROGRESS.md unwritable" \
+                 || no "pre-compact failed on an unwritable ledger (exit $ckrc2)"
+rm -rf "$CT"
+
+# §6.2 — the watchdog must be watched by a party with no stake in the answer.
+./scripts/continuity.sh stalls --as session-orchestrator >/dev/null 2>&1 \
+  && no "the orchestrator was allowed to run its own stall check" \
+  || ok "the orchestrator may not run its own stall check (the watchdog is watched)"
+./scripts/continuity.sh heartbeat not-an-agent working >/dev/null 2>&1 \
+  && no "heartbeat accepted an unknown agent name" \
+  || ok "heartbeat rejects an agent outside the roster"
+sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'write divergence, not a stall' \
+  && ok "stall detection distinguishes divergence from a stall (never one store)" \
+  || no "stall detection lost the divergence branch — it would escalate from a single store"
+
+echo
 echo "== E. release trail =="
 TRAIL="logs/release-audit.jsonl"
 if [ ! -f "$TRAIL" ]; then
