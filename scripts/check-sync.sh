@@ -73,6 +73,28 @@ done <<EOF
 $ROWS
 EOF
 
+# MAP COMPLETENESS, in the Lite direction. Every row above proves a DECLARED artifact is in the
+# state its relation claims — and nothing proved the converse: that a Lite file is declared at all.
+# The ADDED relation made declaring a Lite-first artifact possible at L1; it did not make it
+# required, so an undeclared file was still invisible to the map whose whole purpose is that nothing
+# is undeclared. That is C-26's shape exactly: the check looked complete and never covered the
+# directory that mattered.
+#
+# Scoped to the machinery directories. Ledgers, README and docs are prose that changes every session
+# and declaring each one would be noise, not coverage.
+declared=$(printf '%s\n' "$ROWS" | cut -f3 | grep -v '^—$' | sort -u)
+ontree=$(git ls-files 'hooks/*' 'scripts/*' '.claude/*' 2>/dev/null | sort -u)
+ndec=$(printf '%s\n' "$declared" | grep -c . || true)
+ntree=$(printf '%s\n' "$ontree" | grep -c . || true)
+if [ "${ndec:-0}" -lt 5 ] || [ "${ntree:-0}" -lt 5 ]; then
+  fail "map-completeness extraction is vacuous (declared:$ndec tree:$ntree) — the comparison below would prove nothing"
+else
+  undeclared=$(comm -13 <(printf '%s\n' "$declared") <(printf '%s\n' "$ontree") | tr '\n' ' ')
+  [ -z "$undeclared" ] \
+    && pass "every tracked file under hooks/ scripts/ .claude/ is declared in the map ($ntree files)" \
+    || fail "UNDECLARED Lite file(s) — the map does not mention:[$undeclared] (use ADDED, ADAPTED or MIRRORED)"
+fi
+
 # Vocabulary parity, a targeted byte-check inside an ADAPTED file. security.md was MIRRORED until
 # L1 and was reclassified because byte-identity shipped references to an arbiter this build does
 # not have. What mattered about MIRRORED was not the whole file — it was that two builds exchanging

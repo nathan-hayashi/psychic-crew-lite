@@ -35,9 +35,13 @@ documentation that rots, which is the failure the parent build kept recording.
 ## Verify it yourself
 
 ```bash
+./scripts/verify.sh          # all three layers, with the regression signal
+./scripts/verify.sh --record # ...and append a bisectable line to the history
+
 ./scripts/apply-models.sh    # stamps agent frontmatter from models.config.json
-./scripts/check-sync.sh      # enforces the parent correlation
-./scripts/validate-lite.sh   # wiring, model policy, hygiene, and the guards firing for real
+./scripts/check-sync.sh      # layer 1b: parent correlation, and map completeness
+./scripts/validate-lite.sh   # layer 1a: wiring, model policy, hygiene, guards firing for real
+./scripts/check-witness.sh   # layer 2: every attested correction still holds
 ```
 
 Set `PSYCHIC_CREW_PARENT` if the parent repo is not at `$HOME/projects/psychic-crew`.
@@ -67,10 +71,37 @@ and neither is claimed to be the other.
 audit afterwards; the parent's equivalent gate produced six live denials and zero records before
 this was enforced.
 
+## Verification — three layers
+
+Most builds have layer 1 and call it testing.
+
+| Layer | What it answers | Where |
+| --- | --- | --- |
+| **1 · behavioural** | does the thing under test actually do it? | `validate-lite.sh` (24) · `check-sync.sh` (41) |
+| **2 · witness manifest** | is every correction we ever made *still* in force? | `check-witness.sh` (16 attested) |
+| **3 · temporal history** | **when** did it stop working? | `docs/verification-history.jsonl` |
+
+**Layer 2 exists because a marker is not a control.** The parent's registry holds 26 documented
+fixes each with a detector, and its audit found two of those detectors attesting nothing — one
+matched a comment describing the fix rather than the fix itself. So markers here are searched in
+**comment-stripped code**, and a marker surviving only in a comment is reported as its own kind of
+failure. Each entry also pins a hash of the file it lives in: edit that file and the entry goes
+`STALE` — not passing, not failing — until someone re-verifies and re-stamps deliberately.
+
+**Layer 3 is the one nothing here had.** Without it no one can answer when a control stopped
+working. One append-only line per recorded run, carrying the commit, so a regression is bisected
+rather than argued about. It is tracked rather than in `logs/`: a bisectable record that does not
+survive a clone is not a record.
+
+Regression is judged against a **rolling median of the last five runs**, not the last run, so a
+single noisy run is not a regression. The signal threshold is stated in `verify.sh` rather than
+implied: any `FAIL`, any `STALE`, or a layer-1 pass count *below* the median. Counts going up is
+expected and quiet.
+
 ## Status
 
-**L1 complete.** Scaffold plus enforcement: six hooks, the deny-list, the class-aware model guard,
-the secrets guard, the release guard, and `validate-lite.sh` — 24 assertions, eleven of them
-behavioural and run under a temp root so no case touches the live trail it audits.
+**L2 complete.** Scaffold, enforcement, and verification. Six hooks, 16 attested corrections, and a
+bisectable history.
 
-No continuity layer and no release trail yet: those are L2–L3.
+L3 is continuity — ledgers, distillation, checkpoint/restore, stall detection. L4 is one end-to-end
+build exercising all four agents and the cross-release law.

@@ -57,6 +57,10 @@ ADDED	—	.claude/rules/release-protocol.md
 ADDED	—	hooks/release-guard.sh
 ADDED	—	scripts/check-sync.sh
 ADDED	—	docs/SYNC-CORRELATION.md
+ADDED	—	scripts/check-witness.sh
+ADDED	—	scripts/verify.sh
+ADDED	—	docs/WITNESS-MANIFEST.md
+ADDED	—	docs/verification-history.jsonl
 DROPPED	hooks/audit-logger.sh	—
 DROPPED	hooks/auto-format.sh	—
 DROPPED	hooks/provenance-flag.sh	—
@@ -81,6 +85,10 @@ DROPPED	hooks/pre-compact-checkpoint.sh	—
 ## Not yet mapped
 
 `hooks/` and `scripts/validate-crew.sh` **arrived at L1** and are mapped above.
+
+**L2 added four Lite-first artifacts**, all `ADDED`: the witness manifest and its checker
+(verification layer 2), the three-layer entry point, and the temporal history (layer 3). None has a
+parent counterpart — the parent has layers 1 and a hand-rolled 2, and no layer 3 at all.
 
 Still absent on purpose: `scripts/run-crew-tests.sh`, `scripts/save-context.sh` and
 `.claude/skills/intake/`. A map row for a file Lite does not have yet would fail the check for the

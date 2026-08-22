@@ -28,3 +28,12 @@
 - **Verified at close:** validate-lite 24 PASS / 1 SKIP / 0 FAIL · check-sync 36 PASS / 0 FAIL · apply-models 4 stamped · phase derivation moved L0 -> L1 on the approved row alone · pending-gate toast correctly silent.
 - **Closed from L0's register:** Lite's own stop hook (resolves L-series tokens, demonstrated both firing and falling silent) and the `security.md` relation question (ADAPTED, severity table pinned).
 - **Next action:** L2 — the continuity layer and the release trail. Checkpoint hook, distillation, and `logs/release-audit.jsonl` actually written by a dispatch rather than only guarded. `pre-compact-checkpoint` is recorded DROPPED-as-deferral and belongs to L3.
+
+## [L2|2026-08-22T21:31:30Z] L2 VERIFICATION COMPLETE — awaiting the closing token
+- **Corrected first:** my L1 closure note said L2 was continuity. Plan §3 says L2 is verification, L3 is continuity. Disk is the authority; caught by re-grounding before acting.
+- **Layer 2:** `docs/WITNESS-MANIFEST.md` + `check-witness.sh` — **16 attested corrections**, markers searched in comment-stripped code, each pinned to a file hash. STALE (exit 2) is distinct from FAIL (exit 1).
+- **Layer 3:** `docs/verification-history.jsonl` + `verify.sh --record` — tracked, append-only, commit-stamped, rolling median over 5 runs with a stated signal threshold.
+- **Also closed:** map completeness — every tracked file under `hooks/ scripts/ .claude/` must be declared (21 files).
+- **Verified:** verify.sh reports layer1 **24/1/0** · sync **41/0** · layer2 **16/0/0** · no signal.
+- **Controls:** 9 external (5 layer-2, 3 layer-3, 1 completeness) plus the in-suite behavioural set. All fired.
+- **Next action:** await `APPROVE GATE-L2` to close L2. L3 is continuity: ledgers, distillation, checkpoint/restore, stall detection (§6), including `pre-compact-checkpoint` which L1 recorded as a deferral to here.
