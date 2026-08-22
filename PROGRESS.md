@@ -37,3 +37,9 @@
 - **Verified:** verify.sh reports layer1 **24/1/0** · sync **41/0** · layer2 **17/0/0** · no signal.
 - **Controls:** 10 external (5 layer-2, 4 layer-3, 1 completeness) plus the in-suite behavioural set. All fired.
 - **Next action:** await `APPROVE GATE-L2` to close L2. L3 is continuity: ledgers, distillation, checkpoint/restore, stall detection (§6), including `pre-compact-checkpoint` which L1 recorded as a deferral to here.
+
+## [L2|2026-08-22T21:42:42Z] GATE-L2 CLOSED — APPROVED, condition satisfied
+- **Token was conditional** and was held until every named defect was corrected. Four resolved, each with an executed control.
+- **Verified at close:** verify.sh layer1 **24/1/0** · sync **41/0** · layer2 **17/0/0** · no signal. Parent unchanged and green at 165 / 43+1SKIP.
+- **Swept, negative result:** the `grep -c` fallback idiom is not present in the parent; its `wc -l` lookalikes are not the same defect. Both demonstrated, not reasoned.
+- **Next action:** L3 — continuity (§6): ledgers, distillation, checkpoint/restore, stall detection, the watchdog that is itself watched, and Seance. `pre-compact-checkpoint` is the deferral L1 recorded to here.

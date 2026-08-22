@@ -18,7 +18,11 @@ warn () { W=$((W+1)); printf '  [REVIEW] %s\n' "$1"; }
 
 [ -d "$PARENT" ] || { echo "  [SKIP] parent repo not found at \$PSYCHIC_CREW_PARENT"; echo "== check-sync: skipped =="; exit 0; }
 
-ROWS=$(awk '/^# SYNC-MAP/{f=1;next} f&&/^```/{exit} f&&NF' "$MAP" 2>/dev/null)
+# Anchored on the VERSIONED header, not the prefix. The same loose form in check-witness.sh matched
+# that document's own H1, so extraction read prose as rows and --refresh destroyed the file. This
+# one happens to be safe today only because no other line starts with the prefix; that is luck, and
+# the class has already proven itself destructive once here.
+ROWS=$(awk '/^# SYNC-MAP v[0-9]+$/{f=1;next} f&&/^```/{exit} f&&NF' "$MAP" 2>/dev/null)
 # Vacuity guard first. A map that parses to nothing makes every comparison below trivially clean,
 # which is how a parser change silently switches this check off.
 [ "$(printf '%s\n' "$ROWS" | grep -c .)" -ge 5 ] \

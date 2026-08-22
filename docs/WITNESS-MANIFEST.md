@@ -36,13 +36,13 @@ W-04	scripts/validate-lite.sh	every tracked hook is wired	521a7da53f67533e
 W-05	hooks/_common.sh	PHASE="L?"	c6ad08a77c06404e
 W-06	hooks/_common.sh	deny-audit.jsonl	c6ad08a77c06404e
 W-07	hooks/release-guard.sh	released_by equals from_agent	411e4706d4470b62
-W-08	scripts/check-sync.sh	severity vocabulary byte-identical	3acec08bf3f18d12
-W-09	scripts/check-sync.sh	ADDED row names a parent path	3acec08bf3f18d12
-W-10	scripts/check-sync.sh	every comparison below would be vacuous	3acec08bf3f18d12
+W-08	scripts/check-sync.sh	severity vocabulary byte-identical	a2abbddf75cf9d86
+W-09	scripts/check-sync.sh	ADDED row names a parent path	a2abbddf75cf9d86
+W-10	scripts/check-sync.sh	every comparison below would be vacuous	a2abbddf75cf9d86
 W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	1f035a0ac95a0bd4
 W-12	hooks/sensitive-guard.sh	writes to .env/secrets are blocked	4489ddd39bc978cd
 W-13	scripts/validate-lite.sh	denial records carry an L-series phase	521a7da53f67533e
-W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	3acec08bf3f18d12
+W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	a2abbddf75cf9d86
 W-15	scripts/verify.sh	rolling-median	bda59c4e7f29960b
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	39df0904728c69dc
 W-17	scripts/verify.sh	history did NOT record	bda59c4e7f29960b
