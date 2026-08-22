@@ -50,3 +50,9 @@
 - **Controls:** stall reachable and suppressed on the same input; three fidelity controls; four checkpoint assertions; the orchestrator refused its own stall check.
 - **Found and fixed in-flight:** store 2 observed store 1, making STALL unreachable; a full-width bar in an extractor; a stray quote from a triple-quote boundary; an over-strict completeness matcher.
 - **Next action:** await `APPROVE GATE-L3` to close L3. L4 is the stress phase — one end-to-end build across all four agents and the cross-release law, and the first real traffic in `logs/release-audit.jsonl`.
+
+## [L3|2026-08-22T22:13:56Z] GATE-L3 CLOSED — APPROVED
+- **Token:** `APPROVE GATE-L3` @ 2026-08-22T22:13:56Z, against work that exists.
+- **Verified at close:** verify.sh layer1 **31/1/0** · sync **47/0** · distill **11/0** · layer2 **23/0/0** · no signal. Phase moved L2 -> L3 on the approved row alone; orientation reports it without being told.
+- **Delivered:** checkpoint/restore, declared-binding distillation, stall detection that needs two stores, the watched watchdog, Seance, orientation.
+- **Next action:** L4 — the stress phase. One end-to-end build across all four agents exercising the cross-release law, and the first real traffic in `logs/release-audit.jsonl`. This is the first LIVE test of the release law: until now it has been guarded and asserted, never run.

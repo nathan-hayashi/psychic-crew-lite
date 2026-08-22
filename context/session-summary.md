@@ -53,5 +53,6 @@ is an open question for L4.
 
 ## Next action
 
-Await `APPROVE GATE-L3`. L4 is the stress phase: one end-to-end build exercising all four agents and
-the cross-release law, which is also the first time `logs/release-audit.jsonl` carries real traffic.
+L4, the stress phase: one end-to-end build exercising all four agents and the cross-release law.
+It is the first time `logs/release-audit.jsonl` carries real traffic rather than only being guarded,
+so it is also the first live test of the release law itself.
