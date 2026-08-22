@@ -64,3 +64,10 @@
 - **Two defects of my own:** the harness truncated the LIVE release trail (C-13); fixing that exposed a vacuous PASS on an empty trail in the check guarding the release law. Both fixed and controlled; the trail clearing is recorded, not silent.
 - **Stated limit:** the four agents are not dispatched as subagents here — this session's project directory is the parent repo. The harness stands in and says so.
 - **Next action:** await `APPROVE GATE-L4` to close L4 and the Lite build.
+
+## [L4|2026-08-22T22:38:32Z] GATE-L4 CLOSED — APPROVED. The Lite build is complete.
+- **Precondition first:** the operator required C-14's generalisation before the token. Done in the parent and registered as **C-27** — C-14 had recurred on a second trail; **5,817 of 6,177 denial records (94%) were fixture-generated**. Fixtures isolated, 5,860 redacted with the redaction recorded, canary generalised to every trail.
+- **Two more found by that work:** the count binding ran before an assertion added after it, and covered one instance of a claim while an identical claim sat stale. Both the same shape as C-27; both fixed.
+- **Verified at close:** Lite verify.sh layer1 31/1/0 · sync 50/0 · distill 11/0 · stress 14/0 · layer2 28/0/0, no signal. Parent 43+1SKIP · **166** · 23 · PORTABLE.
+- **Phase:** L3 -> L4 on the approved row alone.
+- **Next action:** the Lite build is closed at L4. No phase is open. Remaining parent items: port the declared-binding distillation (finishes CR-034), and CR-024's extension to `hooks/` which needs an operator plan re-export (C-26).
