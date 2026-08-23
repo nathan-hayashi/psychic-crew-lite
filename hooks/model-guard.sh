@@ -46,7 +46,7 @@ esac
 # Path B — any other config-surface file: assignment positions for model:, class: and effort-free
 # aliases. A class naming a forbidden model directly is caught here even outside the config.
 for b in $BAD; do
-  if printf '%s' "$C" | grep -qiE "^[[:space:]]*[\"-]?[[:space:]]*(model|class)\"?[[:space:]]*:[[:space:]]*\"?[^\",}]*${b}"; then
+  if grep -qiE "^[[:space:]]*[\"-]?[[:space:]]*(model|class)\"?[[:space:]]*:[[:space:]]*\"?[^\",}]*${b}" <<<"$C"; then
     deny "LC-2: write assigns a forbidden ($b) model or class into the config surface"
   fi
 done

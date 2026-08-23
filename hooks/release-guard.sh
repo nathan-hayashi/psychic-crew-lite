@@ -26,16 +26,18 @@ $CMD" ;; esac
 
 # Every complete JSON object in the payload is checked. grep -o keeps it to objects, so surrounding
 # shell syntax in a Bash command does not have to parse.
-printf '%s' "$BODY" | grep -oE '\{[^{}]*"released_by"[^{}]*\}' 2>/dev/null | while IFS= read -r obj; do
+self_hits=$(printf '%s' "$BODY" | grep -oE '\{[^{}]*"released_by"[^{}]*\}' 2>/dev/null | while IFS= read -r obj; do
   fa=$(printf '%s' "$obj" | jq -r '.from_agent // empty' 2>/dev/null || true)
   rb=$(printf '%s' "$obj" | jq -r '.released_by // empty' 2>/dev/null || true)
   [ -n "$fa" ] && [ -n "$rb" ] && [ "$fa" = "$rb" ] && echo SELF && break
-done | grep -q SELF && deny "release protocol: released_by equals from_agent - a party may not release its own output"
+done)
+grep -q SELF <<<"$self_hits" && deny "release protocol: released_by equals from_agent - a party may not release its own output"
 
 # A release line with no task_id cannot be correlated to the dispatch it covers, and coverage
 # correlated by count rather than identity is satisfiable by the audited party.
-printf '%s' "$BODY" | grep -oE '\{[^{}]*"released_by"[^{}]*\}' 2>/dev/null | while IFS= read -r obj; do
+noid_hits=$(printf '%s' "$BODY" | grep -oE '\{[^{}]*"released_by"[^{}]*\}' 2>/dev/null | while IFS= read -r obj; do
   ti=$(printf '%s' "$obj" | jq -r '.task_id // empty' 2>/dev/null || true)
   [ -z "$ti" ] && echo NOID && break
-done | grep -q NOID && deny "release protocol: release line carries no task_id - coverage would be uncorrelatable"
+done)
+grep -q NOID <<<"$noid_hits" && deny "release protocol: release line carries no task_id - coverage would be uncorrelatable"
 exit 0

@@ -16,7 +16,7 @@ case "$F" in
     # failing an Edit here would be a guess about content the hook cannot see.
     [ -n "$C" ] || exit 0
     for e in ".env" "logs/" ".claude/state/"; do
-      printf '%s' "$C" | grep -qxF "$e" || deny "sensitive guard: write removes protected ignore entry '$e'"
+      grep -qxF "$e" <<<"$C" || deny "sensitive guard: write removes protected ignore entry '$e'"
     done ;;
 esac
 exit 0

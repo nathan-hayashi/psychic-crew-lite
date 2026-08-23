@@ -28,7 +28,7 @@ of the design and the reason the rule is stated rather than left to the implemen
 
 ## Verification — three layers
 
-**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **35** attested corrections,
+**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **38** attested corrections,
 each bound to a marker searched in comment-stripped code and pinned to a content hash, so an edit
 makes an entry `STALE` rather than letting a stale attestation coast. Layer 3 is the temporal
 history in `docs/verification-history.jsonl` — append-only and commit-stamped, so a regression is

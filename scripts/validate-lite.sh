@@ -108,8 +108,13 @@ vh=$(git grep -ilE "$_v1|$_v2|$_v3" -- . 2>/dev/null | grep -v '^hooks/bash-bloc
 # THE ALLOWLIST IS EMPTY AND STAYS EMPTY — an exemption turns a class assertion back into an
 # instance fix, which is the whole reason this rule exists.
 _sd1="gre""p -c"; _sd2="|| ec""ho"
+# STRIPPER UPGRADED at v2. `s/#.*//` destroys any line carrying a hash inside a string, and this
+# repo's scripts are full of them: a naive census of the rule-5 class here reported 4 sites where
+# the accurate one found 9. A scanner blind to more than half its class reports clean and means
+# nothing. Strip only a whitespace-introduced hash, or a whole-line comment.
+_sdstrip='s/^[[:space:]]*#.*$//; s/[[:space:]]#.*$//'
 sdbad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
-          sed 's/#.*//' "$sdf" | grep -nF -- "$_sd1" | grep -F -- "$_sd2" | sed "s|^|$sdf:|"
+          sed -E "$_sdstrip" "$sdf" | grep -nF -- "$_sd1" | grep -F -- "$_sd2" | sed "s|^|$sdf:|"
         done)
 sdn=$(git ls-files '*.sh' 2>/dev/null | grep -c .)
 # Vacuity guard: a scan over no files is trivially clean, which is how this would switch off.
@@ -117,6 +122,18 @@ sdn=$(git ls-files '*.sh' 2>/dev/null | grep -c .)
                       || no "R-SD-1 scan is vacuous — only ${sdn:-0} shell file(s) enumerated"
 [ -z "$sdbad" ] && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
                 || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+
+# R-SD-1 rule 5 — the sibling class, mirrored from the parent's ruling. `producer | grep -q PAT`
+# under pipefail: grep -q exits the instant it matches, the producer's next write takes SIGPIPE
+# (141), and pipefail reports the producer's death as the pipeline's verdict. In the parent it cost
+# a one-in-four red suite on unchanged inputs. NO SMALL-INPUT EXEMPTION and an EMPTY allowlist, per
+# the rule: uniformity is the guard.
+_sd5="| gr""ep -"
+sd5bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sd5f; do
+           sed -E "$_sdstrip" "$sd5f" | grep -nE '\|[[:space:]]*grep[[:space:]]+-[a-zA-Z]*q' | sed "s|^|$sd5f:|"
+         done)
+[ -z "$sd5bad" ] && ok "R-SD-1 rule 5: no status-consumed pipeline with a signal-able producer (census 9 -> 0)" \
+                 || no "R-SD-1 rule 5 VIOLATION — pipe-to-grep-q at: $(printf '%s' "$sd5bad" | tr '\n' ' ')"
 # The rule is MIRRORED, so the assertion must be bound to the rule actually being present — a class
 # check enforcing a rule this repo does not carry would be enforcing nothing declared.
 [ -f .claude/rules/shell-discipline.md ] \
@@ -218,7 +235,7 @@ cp scripts/continuity.sh "$DT/scripts/"; cp GATES.md PROGRESS.md "$DT/" 2>/dev/n
 rm -rf "$DT"
 # Confirm-it-landed, and the durable line must parse with its required fields. The L2 history write
 # once reported success while appending nothing.
-sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'durable record did NOT land' \
+grep -qF -- 'durable record did NOT land' <<<"$(sed 's/#.*//' scripts/continuity.sh)" \
   && ok "record confirms its line landed rather than assuming it" \
   || no "record does not confirm the write landed"
 if [ -s docs/session-history.jsonl ]; then
@@ -230,14 +247,14 @@ else
 fi
 # Seance must LABEL which store answered. An unlabelled result set looks complete on a machine
 # where it is not, and the durable half is all a fresh clone has.
-sed 's/#.*//' scripts/continuity.sh | grep -qF -- '[durable: survives a clone]' \
+grep -qF -- '[durable: survives a clone]' <<<"$(sed 's/#.*//' scripts/continuity.sh)" \
   && ok "seance labels durable hits so a successor can tell what travels" \
   || no "seance does not distinguish durable from runtime results"
-sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'does not travel to a fresh clone' \
+grep -qF -- 'does not travel to a fresh clone' <<<"$(sed 's/#.*//' scripts/continuity.sh)" \
   && ok "seance says so when every hit is runtime-only" \
   || no "seance is silent when its answer would not travel"
 
-sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'write divergence, not a stall' \
+grep -qF -- 'write divergence, not a stall' <<<"$(sed 's/#.*//' scripts/continuity.sh)" \
   && ok "stall detection distinguishes divergence from a stall (never one store)" \
   || no "stall detection lost the divergence branch — it would escalate from a single store"
 

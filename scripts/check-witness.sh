@@ -84,7 +84,7 @@ while IFS="$(printf '\t')" read -r id file marker hash; do
   [ -n "${id:-}" ] || continue
   if [ ! -f "$file" ]; then fail "$id: attested file is gone — $file"; continue; fi
   # Comment-stripped: a marker surviving only in prose is an attestation of nothing.
-  if ! sed 's/#.*//' "$file" | grep -qF -- "$marker"; then
+  if ! grep -qF -- "$marker" <<<"$(sed 's/#.*//' "$file")"; then
     if grep -qF -- "$marker" "$file"; then
       fail "$id: marker survives ONLY in a comment — the control it attests is gone ($file)"
     else
