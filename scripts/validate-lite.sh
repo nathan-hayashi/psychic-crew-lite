@@ -93,6 +93,36 @@ hits=$(git grep -l "$ABS" -- . 2>/dev/null | tr '\n' ' ')
 _v1="cod""ex"; _v2="chat""gpt"; _v3="open""ai"
 vh=$(git grep -ilE "$_v1|$_v2|$_v3" -- . 2>/dev/null | grep -v '^hooks/bash-blocker\.sh$' | tr '\n' ' ')
 [ -z "$vh" ] && ok "LC-7: no non-Claude vendor name outside the deny-list itself" || no "vendor name in: $vh"
+# R-SD-1 — the CLASS assertion required by .claude/rules/shell-discipline.md, which is MIRRORED
+# byte-identical from the parent. The rule's own enforcement clause specifies this check, so a
+# mirrored rule with no assertion behind it would be prose describing a control that does not exist.
+#
+# The defect: `grep -c` prints its count and THEN exits nonzero on zero matches, so a `|| echo`
+# fallback fires too and the composite emits TWO lines. It misbehaves only when the count is zero —
+# a clean tree — which is why it survived five times across two builds. In THIS repo it broke the
+# durable write at L2 and again at the durability work, the second time three lines below the
+# comment citing the first.
+#
+# NEEDLES FRAGMENT-ASSEMBLED so neither this assertion nor the rule file matches itself. `|| true`
+# is deliberately NOT matched: grep prints "0" and true adds nothing, which is the correct form.
+# THE ALLOWLIST IS EMPTY AND STAYS EMPTY — an exemption turns a class assertion back into an
+# instance fix, which is the whole reason this rule exists.
+_sd1="gre""p -c"; _sd2="|| ec""ho"
+sdbad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
+          sed 's/#.*//' "$sdf" | grep -nF -- "$_sd1" | grep -F -- "$_sd2" | sed "s|^|$sdf:|"
+        done)
+sdn=$(git ls-files '*.sh' 2>/dev/null | grep -c .)
+# Vacuity guard: a scan over no files is trivially clean, which is how this would switch off.
+[ "${sdn:-0}" -ge 5 ] && ok "R-SD-1 class scan covers $sdn tracked shell file(s)" \
+                      || no "R-SD-1 scan is vacuous — only ${sdn:-0} shell file(s) enumerated"
+[ -z "$sdbad" ] && ok "R-SD-1 no count-then-default composite in any tracked shell file" \
+                || no "R-SD-1 VIOLATION — count-then-default composite at: $(printf '%s' "$sdbad" | tr '\n' ' ')"
+# The rule is MIRRORED, so the assertion must be bound to the rule actually being present — a class
+# check enforcing a rule this repo does not carry would be enforcing nothing declared.
+[ -f .claude/rules/shell-discipline.md ] \
+  && ok "R-SD-1 the mirrored rule this assertion enforces is present" \
+  || no "R-SD-1 assertion runs but .claude/rules/shell-discipline.md is absent"
+
 for e in ".env" "logs/" ".claude/state/"; do
   grep -qxF "$e" .gitignore && ok "ignore rule present: $e" || no "ignore rule missing: $e"
 done

@@ -30,6 +30,13 @@ SH="docs/session-history.jsonl"   # DURABLE: tracked, append-only, survives a cl
 STALE_S="${LITE_STALL_SECONDS:-900}"
 AGENTS="session-orchestrator builder verifier security"
 now () { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+# R-SD-1 rule 2 — capture, then validate, before the value reaches any consumer. Both call sites
+# below previously used the forbidden count-then-default composite: guarded by [ -f ] they were
+# safe on a MISSING file, but on a present-and-EMPTY one grep -c prints 0, exits nonzero, and the
+# fallback fires as well, emitting two lines. Found by this repo's own class assertion on its first
+# run, in code written days after the rule's defect had already been paid for twice here.
+sh_count () { _n=$(grep -c . "$1" 2>/dev/null); case "$_n" in ''|*[!0-9]*) _n=0 ;; esac; printf '%s' "$_n"; }
 epoch_of () { date -u -d "$1" +%s 2>/dev/null || echo 0; }
 
 phase_now () {
@@ -152,7 +159,7 @@ orient)
   printf '  head           %s (%s dirty)\n' "$(git rev-parse --short HEAD 2>/dev/null || echo none)" "$(git status --porcelain 2>/dev/null | wc -l)"
   printf '  release law    no output is acted on until a party that did not produce it releases it\n'
     printf '  durable       %s checkpoint(s) in %s (survives a clone)\n' \
-      "$( [ -f "$SH" ] && grep -c . "$SH" 2>/dev/null || echo 0 )" "$SH"
+      "$(sh_count "$SH")" "$SH"
   echo "  last heartbeat per agent:"
   for a in $AGENTS; do
     l=$(jq -r --arg a "$a" 'select(.agent==$a and .event=="heartbeat") | "\(.ts) \(.state)"' "$HB" 2>/dev/null | tail -1)
@@ -187,7 +194,7 @@ seance)
     # Reported, never silent. "No events" and "the log is missing" are different answers and a
     # successor session must be able to tell them apart.
       printf '\n  no events matched. Durable: %s checkpoint(s). Runtime logs: %s\n' \
-        "$( [ -f "$SH" ] && grep -c . "$SH" 2>/dev/null || echo 0 )" \
+        "$(sh_count "$SH")" \
         "$(ls logs/*.jsonl 2>/dev/null | tr '\n' ' ' || echo none)"
     elif [ "$dhits" = 0 ]; then
       # Said out loud rather than left to inference: every hit came from a store that does not

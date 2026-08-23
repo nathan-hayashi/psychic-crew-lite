@@ -78,3 +78,11 @@
 - **Seance labels its stores** — `[durable: survives a clone]` vs `[runtime: this machine only]` — and says outright when an answer will not travel.
 - **Verified:** validate-lite **37 PASS / 1 SKIP / 0 FAIL** · sync 51/0 · distill 11/0 · stress 14/0 · layer2 **32/0/0** · no signal. 41 tracked.
 - **Next action:** no phase or gate open. Remaining operator decision: whether skill-packs open under the §7.1 correlation.
+
+## [LITE-SYNC-1|2026-08-23T00:41:37Z] R-SD-1 mirrored + class assertion — awaiting the closing token
+- **Mirrored:** `.claude/rules/shell-discipline.md` byte-identical from the parent, declared §7.1 MIRRORED. One-byte divergence control FAILs by name.
+- **Class assertion found 2 live violations** in `continuity.sh` (:155, :190) from the durability work — safe on a missing file, wrong on a present-but-empty one. Fixed to capture-then-validate via `sh_count`.
+- **Controls 3/3** plus the mirror control. Allowlist empty.
+- **Counts, attributed:** validate-lite 37 → **40** (+3 R-SD-1) · sync 51 → **52** (+1 MIRRORED row) · layer2 32 → **35** (+3 witness) · tracked 41 → **42**. distill 11 and stress 14 unchanged.
+- **STEP 3 SKIPPED:** no R-SP-1 ruling line was pasted; v3.3's D18 says it is ratified. Conflict reported, not resolved unilaterally.
+- **Next action:** await `APPROVE LITE-SYNC-1`.

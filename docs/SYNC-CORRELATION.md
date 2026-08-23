@@ -33,6 +33,7 @@ decoration — change a row and the check changes with it.
 # SYNC-MAP v1
 ADAPTED	.claude/rules/security.md	.claude/rules/security.md
 MIRRORED	.claude/rules/fallback-protocol.md	.claude/rules/fallback-protocol.md
+MIRRORED	.claude/rules/shell-discipline.md	.claude/rules/shell-discipline.md
 MIRRORED	.gitattributes	.gitattributes
 ADAPTED	.claude/rules/model-policy.md	.claude/rules/model-policy.md
 ADAPTED	scripts/apply-models.sh	scripts/apply-models.sh
