@@ -109,7 +109,25 @@ ntree=$(printf '%s\n' "$ontree" | grep -c . || true)
 if [ "${ndec:-0}" -lt 5 ] || [ "${ntree:-0}" -lt 5 ]; then
   fail "map-completeness extraction is vacuous (declared:$ndec tree:$ntree) — the comparison below would prove nothing"
 else
-  undeclared=$(comm -13 <(printf '%s\n' "$declared") <(printf '%s\n' "$ontree") | tr '\n' ' ')
+  # A PACK is declared at DIRECTORY granularity — that is what the R-SP-1 guard enumerates, and it
+  # is the right unit: declaring every file inside a pack would turn §7.1 into a manifest of pack
+  # contents, and would mean every edit inside a pack needs a map edit. That friction is what makes
+  # people route around a map, which is worse than the coarser grain. So a tracked file living under
+  # a DECLARED pack path is covered by its pack's row; a file under an UNDECLARED pack is still
+  # caught, by the R-SP-1 guard above, naming the pack rather than each file inside it.
+  packdirs=$(printf '%s\n' "$ROWS" | awk -F'\t' '$1=="PACK"{print $3}')
+  ontree_nonpack=$(printf '%s\n' "$ontree" | while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      covered=0
+      while IFS= read -r d; do
+        [ -n "$d" ] || continue
+        case "$f" in "$d"/*) covered=1; break ;; esac
+      done <<PACKEOF
+$packdirs
+PACKEOF
+      [ "$covered" = 0 ] && printf '%s\n' "$f"
+    done)
+  undeclared=$(comm -13 <(printf '%s\n' "$declared") <(printf '%s\n' "$ontree_nonpack") | tr '\n' ' ')
   [ -z "$undeclared" ] \
     && pass "every tracked file under hooks/ scripts/ .claude/ is declared in the map ($ntree files)" \
     || fail "UNDECLARED Lite file(s) — the map does not mention:[$undeclared] (use ADDED, ADAPTED or MIRRORED)"

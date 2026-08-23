@@ -125,3 +125,16 @@
 - **Token:** `APPROVE LITE-GUARD-1` @ 2026-08-23T09:31:09Z. First Lite commit fronted by the guard, which refused until the row was approved.
 - **Verified:** verify.sh layer1 **50/1/0** · sync **55/0** · distill 11/0 · stress 14/0 · layer2 **44/0/0** · no signal. 44 tracked.
 - **Next action:** BLOCK 3 — PACK-CONFLUENCE-1, the first per-pack gate under R-SP-1.
+
+## [PACK-CONFLUENCE-1|2026-08-23T09:37:47Z] First skill-pack built — awaiting the closing token
+- **Pack:** `.claude/skills/packs/confluence-docs` — P1a file intake, P2a no credentials, P3a proposals only. 4 tracked machinery files; workspaces gitignored on the pack-root glob.
+- **Hard line held:** stage-everything stages **zero** workspace paths with real fixture content present; no document text in any tracked file.
+- **Two of my own checks were one-way and controls caught both:** the stage probe was blind to `git add -f` (a tracked workspace file), and the severity check was blind to an ADDED token. Both closed, both now fire in each direction.
+- **Counts:** validate-lite 50 → **55** · sync 55 → **56** · layer2 44 → **48** · tracked 44 → **48**.
+- **NOT COMMITTED — awaiting `APPROVE PACK-CONFLUENCE-1`;** the guard enforces it.
+
+## [PACK-CONFLUENCE-1|2026-08-23T09:39:05Z] GATE CLOSED — APPROVED. First skill-pack live.
+- **Token:** `APPROVE PACK-CONFLUENCE-1` @ 2026-08-23T09:39:05Z, guard-fronted.
+- **Verified:** verify.sh layer1 **55/1/0** · sync **56/0** · distill 11/0 · stress 14/0 · layer2 **48/0/0** · no signal. 48 tracked.
+- **Fixture artifacts cleared** from the workspaces after the gate so the operator's first real export starts clean. The runtime audit line is kept: it carries counts, never text.
+- **Next action:** operator places the v3.5 plan/map pair, then exports one internal document into `.claude/skills/packs/confluence-docs/inbox/` and runs the pack.

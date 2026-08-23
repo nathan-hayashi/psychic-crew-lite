@@ -85,6 +85,7 @@ ADDED	—	docs/WITNESS-MANIFEST.md
 ADDED	—	docs/verification-history.jsonl
 ADDED	—	docs/session-history.jsonl
 ADDED	—	docs/RULINGS.md
+PACK	—	.claude/skills/packs/confluence-docs
 ADAPTED	hooks/pre-compact-checkpoint.sh	hooks/pre-compact-checkpoint.sh
 ADAPTED	scripts/restore-context.sh	scripts/restore-context.sh
 ADAPTED	scripts/save-context.sh	scripts/distill.sh
@@ -106,10 +107,21 @@ DROPPED	hooks/pre-compact-checkpoint.sh	—
 
 ## Why each PACK row is a refusal on the parent side, not an oversight
 
-No pack exists yet, so this section is empty by fact rather than by omission — and the guard
-announces that state rather than passing silently over it, because a class guard with nothing to
-guard is exactly how one stops meaning anything. When the first pack lands its `why` goes here,
-naming what the parent deliberately does not adopt and on what ground.
+- **`.claude/skills/packs/confluence-docs`** — the parent deliberately does not adopt it. Under
+  ruling **B3a** the work-agent scope is Lite-only: the parent is the platform, the place where the
+  crew machinery, its gates and its enforcement layer are developed and proven. A documentation
+  work-agent there would route through an eight-agent roster and a broker this pack has no use for,
+  and would blur the line the two repositories exist to keep — platform versus applied work. The
+  refusal is on that ground, not on the pack's merit.
+
+  **A4a stands and this gate does not touch it.** PACK-CONFLUENCE-1 grants the pack **visibility to
+  the map**, never credentials. Under **P2a** it holds none by construction: file-based intake only,
+  nothing to authenticate with, so it could not reach a live space if instructed to. Under **P3a**
+  every output is a proposal a human acts on manually.
+
+  The gate name and the pack path differ deliberately — gate `PACK-CONFLUENCE-1`, pack
+  `confluence-docs`. The gate is an event in the ledger; the path is a stable directory name that
+  will outlive it.
 
 ## Why each DROPPED row is a decision, not an omission
 

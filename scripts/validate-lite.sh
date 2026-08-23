@@ -259,6 +259,75 @@ grep -qF -- 'write divergence, not a stall' <<<"$(sed 's/#.*//' scripts/continui
   || no "stall detection lost the divergence branch — it would escalate from a single store"
 
 echo
+echo "== H. skill packs (R-SP-1 / P1a P2a P3a) =="
+# PUBLICATION SAFETY IS THE HARD LINE. This repository is PUBLIC, and a pack reads real internal
+# documents. Everything a pack reads or writes must be unstageable, and that has to be an assertion
+# rather than a habit — the habit is what fails on the day someone runs `git add -A` in a hurry.
+PK=".claude/skills/packs"
+pk_dirs=$(find "$PK" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+npk=$(grep -c . <<<"$pk_dirs"); case "$npk" in ''|*[!0-9]*) npk=0 ;; esac
+if [ "$npk" = 0 ]; then
+  ok "no pack on disk — nothing to protect yet (announced, not skipped)"
+else
+  # Every workspace of every pack, ignored. Probed with a path that does not exist, because
+  # check-ignore answers about the PATH, and a rule that only works on existing files is a rule
+  # that arrives after the leak.
+  leak=""
+  while IFS= read -r d; do
+    [ -n "$d" ] || continue
+    for w in inbox work out; do
+      git check-ignore -q "$d/$w/probe-does-not-exist.md" || leak="$leak [$d/$w]"
+    done
+  done <<PKEOF
+$pk_dirs
+PKEOF
+  [ -z "$leak" ] && ok "every pack workspace is gitignored ($npk pack(s), inbox/work/out each)" \
+                 || no "PUBLICATION RISK — pack workspace NOT ignored:$leak"
+  # The probe that actually matters: what would a careless `git add -A` stage?
+  staged_ws=$(git add -A -n 2>/dev/null | grep -cE 'packs/[^/]+/(inbox|work|out)/|logs/pack-[^ ]*\.jsonl')
+  case "$staged_ws" in ''|*[!0-9]*) staged_ws=0 ;; esac
+  [ "$staged_ws" = 0 ] && ok "stage-everything probe stages ZERO pack workspace paths" \
+                       || no "PUBLICATION RISK — stage-everything would stage $staged_ws workspace path(s)"
+  # THE PROBE ABOVE IS BLIND TO THE LIKELIEST LEAK, and a control found that rather than reasoning.
+  # `git add -A -n` reports what WOULD be staged; it says nothing about what already IS. A single
+  # `git add -f` on a proposal makes the file tracked, and the probe then reports ZERO forever after
+  # — clean, and wrong, on the one path a person is most likely to take when an ignore rule gets in
+  # their way. Ask git what is TRACKED under a workspace, which no ignore rule and no force-add can
+  # hide.
+  tracked_ws=$(git ls-files -- "$PK/*/inbox/*" "$PK/*/work/*" "$PK/*/out/*" 2>/dev/null | grep -vc '/\.keep-runtime$')
+  case "$tracked_ws" in ''|*[!0-9]*) tracked_ws=0 ;; esac
+  if [ "$tracked_ws" = 0 ]; then
+    ok "no TRACKED file under any pack workspace (force-add would be caught here)"
+  else
+    no "PUBLICATION RISK — $tracked_ws file(s) TRACKED under a pack workspace: $(git ls-files -- "$PK/*/inbox/*" "$PK/*/work/*" "$PK/*/out/*" 2>/dev/null | grep -v '/\.keep-runtime$' | tr '\n' ' ')"
+  fi
+  # Machinery must be tracked, or the pack is undeclared behaviour.
+  mach_missing=""
+  while IFS= read -r d; do
+    [ -n "$d" ] || continue
+    for m in PACK.md doc-standards.md; do
+      git ls-files --error-unmatch "$d/$m" >/dev/null 2>&1 || mach_missing="$mach_missing [$d/$m]"
+    done
+  done <<PKEOF2
+$pk_dirs
+PKEOF2
+  [ -z "$mach_missing" ] && ok "every pack's machinery is tracked (PACK.md + doc-standards.md)" \
+                         || no "pack machinery untracked:$mach_missing — the contract would not travel"
+  # NO SECOND SCALE. The pack reuses security.md's four severity tokens; a pack inventing its own
+  # makes two vocabularies that drift, which is the defect CR-026 recorded in the parent.
+  sec_toks=$(grep -oE '^\| `(crit|high|med|low)`' .claude/rules/security.md | grep -oE 'crit|high|med|low' | sort -u | tr '\n' ' ')
+  # EXTRACT WHATEVER THE PACK DECLARES, not the tokens we hope to find. The first version grepped
+  # for `crit|high|med|low` specifically, so it could detect a MISSING token and was blind to an
+  # ADDED one — a pack could introduce `blocker` and the check would still report parity. A one-way
+  # comparison is not parity. Read the pack's own severity line and take every backticked word.
+  pk_toks=$(sed -n '/^## Severity vocabulary/,/^## /p' "$PK"/*/PACK.md 2>/dev/null \
+            | grep -oE '`[a-z]+`' | tr -d '`' | sort -u | tr '\n' ' ')
+  { [ -n "$pk_toks" ] && [ "$pk_toks" = "$sec_toks" ]; } \
+    && ok "pack severity vocabulary is security.md's exactly, no second scale ($pk_toks)" \
+    || no "pack severity vocabulary diverges — pack:[$pk_toks] security.md:[$sec_toks]"
+fi
+
+echo
 echo "== G. gate-order guard (H0a, MIRRORED) =="
 # Mirrors the parent's assertion. The guard exists because a session — this one — committed before
 # the operator's token at LITE-SYNC-2. It is MIRRORED byte-identical, so check-sync already proves

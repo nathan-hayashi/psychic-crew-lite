@@ -4,3 +4,19 @@ logs/
 *.log
 node_modules/
 .claude/state/
+
+# ── PACK WORKSPACES (R-SP-1 / P2a) — THIS REPO IS PUBLIC ────────────────────────────────────────
+# Everything a pack READS and everything it WRITES is runtime, never tracked. The operator exports
+# real internal documents into inbox/; the pack normalises them into work/ and writes proposals,
+# drafts and routing lines into out/. None of that may ever reach a public remote.
+#
+# Globbed on the pack ROOT rather than enumerated per pack: a second pack must inherit the same
+# protection on the day it is created, not on the day someone remembers to add three lines. The
+# enumeration would be the drift QR-DG-4 recorded and C-26 repeated.
+#
+# Machinery is tracked by EXCEPTION below — instructions, the standards checklist, templates. If a
+# path is not explicitly re-included here it does not ship, which is the safe default direction.
+.claude/skills/packs/*/inbox/
+.claude/skills/packs/*/work/
+.claude/skills/packs/*/out/
+logs/pack-*.jsonl
