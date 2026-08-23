@@ -34,6 +34,22 @@ while IFS="$(printf '\t')" read -r rel ppath lpath; do
   # ADDED is the one relation with no parent side: a Lite-first artifact. Checked first, because
   # the parent-path rule below would otherwise fail every one of them on a path that is meant to
   # be absent.
+  # PACK (R-SP-1) — Lite-only, parent-side refusal, proposal-only under A4a. Checked before the
+  # parent-path rule below, which would otherwise fail every pack on a path meant to be absent.
+  if [ "$rel" = "PACK" ]; then
+    if [ "$ppath" != "—" ] && [ -n "$ppath" ]; then
+      fail "PACK row names a parent path ($ppath); a pack is Lite-only by definition"
+    elif [ ! -e "$lpath" ]; then
+      fail "PACK: declared pack is not on disk — $lpath"
+    elif ! grep -qF -- "$lpath" <<<"$(awk '/^## Why each PACK row/,/^## Why each DROPPED/' "$MAP")"; then
+      # The ruling requires a WHY on the parent side. A declared pack with no recorded reason is a
+      # row that asserts a refusal nobody wrote down.
+      fail "PACK: $lpath is declared but no 'why' is recorded for the parent-side refusal"
+    else
+      pass "PACK declared with a parent-side why — $lpath"
+    fi
+    continue
+  fi
   if [ "$rel" = "ADDED" ]; then
     if [ "$ppath" != "—" ] && [ -n "$ppath" ]; then
       fail "ADDED row names a parent path ($ppath); use MIRRORED or ADAPTED"
@@ -97,6 +113,30 @@ else
   [ -z "$undeclared" ] \
     && pass "every tracked file under hooks/ scripts/ .claude/ is declared in the map ($ntree files)" \
     || fail "UNDECLARED Lite file(s) — the map does not mention:[$undeclared] (use ADDED, ADAPTED or MIRRORED)"
+fi
+
+# R-SP-1 CLASS GUARD — the direction that matters. Every row above proves a DECLARED pack is in the
+# state its relation claims; this proves the converse, that a pack ON DISK is declared at all. That
+# converse is the whole ruling: skill-packs open UNDER §7.1, so an undeclared pack is a failure
+# rather than a thing someone should have remembered to add.
+#
+# Same shape as the map-completeness guard, and the same reason: `ADDED` made declaring a Lite-first
+# artifact possible at L1 and did not make it required, and the gap sat there until it was closed.
+PACKROOT=".claude/skills/packs"
+packs_disk=$(find "$PACKROOT" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+packs_decl=$(printf '%s\n' "$ROWS" | awk -F'\t' '$1=="PACK"{print $3}' | sort)
+np_disk=$(grep -c . <<<"$packs_disk"); np_decl=$(grep -c . <<<"$packs_decl")
+case "$np_disk" in ''|*[!0-9]*) np_disk=0 ;; esac
+case "$np_decl" in ''|*[!0-9]*) np_decl=0 ;; esac
+if [ ! -d "$PACKROOT" ] || [ "$np_disk" = 0 ]; then
+  # ANNOUNCED, never a silent pass. A class guard with nothing to guard proves nothing, and saying
+  # so is what keeps it from quietly becoming decoration before the first pack ever lands.
+  pass "R-SP-1 pack guard armed; no pack on disk yet under $PACKROOT/ — nothing to correlate (declared: $np_decl)"
+else
+  undeclared=$(comm -13 <(printf '%s\n' "$packs_decl") <(printf '%s\n' "$packs_disk") | tr '\n' ' ')
+  [ -z "$undeclared" ] \
+    && pass "R-SP-1 every pack on disk is declared under §7.1 ($np_disk pack(s))" \
+    || fail "R-SP-1 UNDECLARED pack(s) on disk — the map does not mention:[$undeclared] (add a PACK row and its why)"
 fi
 
 # Vocabulary parity, a targeted byte-check inside an ADAPTED file. security.md was MIRRORED until

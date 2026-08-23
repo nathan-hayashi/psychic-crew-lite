@@ -8,7 +8,7 @@ checked by `./scripts/distill.sh check`.
 
 **verified** — psychic-crew-lite: a four-agent IT-automation crew derived from psychic-crew, with a
 human gate on every phase. Claude Code is the runtime, so hooks fire and the enforcement layer
-travels. **42** tracked files.
+travels. **43** tracked files.
 
 **verified** — There is no arbiter. Neither producer releases its own output: `verifier` releases
 `security`'s findings and `security` releases `verifier`'s, with `released_by` required to differ
@@ -28,7 +28,7 @@ of the design and the reason the rule is stated rather than left to the implemen
 
 ## Verification — three layers
 
-**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **38** attested corrections,
+**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **42** attested corrections,
 each bound to a marker searched in comment-stripped code and pinned to a content hash, so an edit
 makes an entry `STALE` rather than letting a stale attestation coast. Layer 3 is the temporal
 history in `docs/verification-history.jsonl` — append-only and commit-stamped, so a regression is
@@ -36,7 +36,7 @@ bisected rather than argued. Regression is judged against a rolling median, not 
 
 ## Correlation with the parent
 
-**verified** — `docs/SYNC-CORRELATION.md` holds **49** sync map rows under four relations:
+**verified** — `docs/SYNC-CORRELATION.md` holds **50** sync map rows under four relations:
 MIRRORED, ADAPTED, DROPPED and ADDED. `security.md` is ADAPTED because byte-identity shipped
 references to an arbiter this build does not have, while its severity table stays pinned
 byte-identical — two builds that disagree about `crit` cannot exchange findings.

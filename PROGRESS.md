@@ -99,3 +99,17 @@
 - **Verified at close:** verify.sh layer1 **41/1/0** · sync **52/0** · distill **11/0** · stress **14/0** · layer2 **38/0/0** · no signal. 42 tracked, clean.
 - **R-SD-1 v2 now enforced in both builds** with byte-identical rule text and two class assertions each; census zero in both.
 - **Next action:** none open. Operator's AFTER step: replace `MASTER_FIFO_PLAN_CLAUDE.md` with v3.4 (DIRECTORY_GUIDE unchanged this revision).
+
+## [R-SP-1|2026-08-23T08:59:27Z] Skill-pack class guard built — awaiting the closing token
+- **Ratified explicitly** by the operator; the LITE-SYNC-2 skip is resolved.
+- **Built:** `PACK` relation, path convention `.claude/skills/packs/<pack-name>/`, disk→map class guard, `docs/RULINGS.md`, and a logic-reading detector.
+- **Verified:** verify.sh layer1 **47/1/0** · sync **54/0** · distill 11/0 · stress 14/0 · layer2 **42/0/0** · no signal.
+- **Counts:** validate-lite 41 → **47** (+6 R-SP-1 detector) · sync 52 → **54** (+PACK guard, +RULINGS row) · layer2 38 → **42** (+4 witness) · tracked 42 → **43**.
+- **Controls 7/7.** A4a stands: declaring a pack grants no credentials.
+- **NOT COMMITTED — awaiting `APPROVE R-SP-1`.** Last block I committed before the token; not repeating that.
+
+## [R-SP-1|2026-08-23T09:02:07Z] GATE R-SP-1 CLOSED — APPROVED
+- **Token:** `APPROVE R-SP-1` @ 2026-08-23T09:02:07Z, against work that exists and was not committed before it.
+- **Verified at close:** verify.sh layer1 **47/1/0** · sync **54/0** · distill **11/0** · stress **14/0** · layer2 **42/0/0** · no signal. 43 tracked.
+- **Skill-packs are open** under §7.1, class-guarded disk→map, with A4a intact — declaring a pack grants visibility, never credentials.
+- **Next action:** no phase or gate open in either repo. The first pack, when it lands, needs a `PACK` row, a recorded why, and its own per-pack gate under A4a.

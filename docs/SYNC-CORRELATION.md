@@ -11,9 +11,29 @@ mechanism, and `scripts/check-sync.sh` is what stops it becoming documentation t
 | `ADAPTED` | Lite deliberately differs | parent path must exist; a change upstream raises a **review obligation**, not a failure |
 | `DROPPED` | considered absence | parent path must exist; recorded so nobody re-adds it by accident |
 | `ADDED` | Lite-only, no parent counterpart | lite path must exist; recorded so a Lite-first artifact is declared rather than invisible |
+| `PACK` | a domain skill-pack (R-SP-1) | lite path must exist, parent path must be `—`, and a **why** must be recorded below; proposal-only under A4a |
 
 **Direction is one-way by default: parent → Lite.** The parent is the mature build; Lite inherits.
 A Lite-first change is permitted but must be declared `ADDED`, never left as undeclared drift.
+
+`PACK` was introduced under ruling **R-SP-1**. Skill-packs open UNDER §7.1 rather than beside it,
+so a pack that exists on disk and is not declared here is a `check-sync` FAILURE naming the path —
+the class guard, not a convention anyone has to remember.
+
+It is a distinct relation rather than a reuse of `ADDED` or `DROPPED`, and the reason is that the
+ruling asks for three properties at once that neither existing relation carries. A pack is Lite-only
+(so `DROPPED`, which requires a live parent path, cannot express it), and the parent's disposition
+toward it is a **deliberate refusal with a reason** (which `ADDED` does not record). `PACK` carries
+both, plus the A4a constraint below. Overloading an existing relation would have made the map say
+something it does not mean, which is the failure a correlation map exists to prevent.
+
+**The path convention, stated once so the guard can enumerate it:**
+`.claude/skills/packs/<pack-name>/`, each carrying a `PACK.md` contract. The guard enumerates
+directories under that root; anything there without a row fails.
+
+**A4a stands.** Packs are **proposal-only**: no pack receives scoped write credentials until a
+per-pack gate grants them. Declaring a pack here grants nothing — it makes the pack visible to the
+map, and visibility is the precondition for a gate, not a substitute for one.
 
 `ADDED` was introduced at L1 because the map had a hole its own rule forbade: every relation
 required a parent path, so a Lite-only artifact could not have a row at all. `release-protocol.md`
@@ -63,6 +83,7 @@ ADDED	—	scripts/verify.sh
 ADDED	—	docs/WITNESS-MANIFEST.md
 ADDED	—	docs/verification-history.jsonl
 ADDED	—	docs/session-history.jsonl
+ADDED	—	docs/RULINGS.md
 ADAPTED	hooks/pre-compact-checkpoint.sh	hooks/pre-compact-checkpoint.sh
 ADAPTED	scripts/restore-context.sh	scripts/restore-context.sh
 ADAPTED	scripts/save-context.sh	scripts/distill.sh
@@ -81,6 +102,13 @@ DROPPED	hooks/reference-cap.sh	—
 DROPPED	hooks/subagent-start.sh	—
 DROPPED	hooks/pre-compact-checkpoint.sh	—
 ```
+
+## Why each PACK row is a refusal on the parent side, not an oversight
+
+No pack exists yet, so this section is empty by fact rather than by omission — and the guard
+announces that state rather than passing silently over it, because a class guard with nothing to
+guard is exactly how one stops meaning anything. When the first pack lands its `why` goes here,
+naming what the parent deliberately does not adopt and on what ground.
 
 ## Why each DROPPED row is a decision, not an omission
 

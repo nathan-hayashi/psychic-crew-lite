@@ -259,6 +259,28 @@ grep -qF -- 'write divergence, not a stall' <<<"$(sed 's/#.*//' scripts/continui
   || no "stall detection lost the divergence branch — it would escalate from a single store"
 
 echo
+echo "== F. rulings (R-SP-1) =="
+# The detector reads the guard's LOGIC, never a token: a file that merely mentions the ruling
+# satisfies a grep and guards nothing, which is the shape the parent's audit found twice.
+[ -f docs/RULINGS.md ] && ok "the rulings register exists and is tracked" \
+                       || no "docs/RULINGS.md missing — a ruling living outside the filesystem is a breach"
+_rs="che""ck-sync.sh"
+csbody=$(sed -E "$_sdstrip" scripts/check-sync.sh)
+for needle in 'UNDECLARED pack(s) on disk' 'a pack is Lite-only by definition' "no 'why' is recorded"; do
+  grep -qF -- "$needle" <<<"$csbody" \
+    && ok "R-SP-1 guard carries the logic: ${needle}" \
+    || no "R-SP-1 guard is missing the logic for: ${needle}"
+done
+# The map must declare the relation and the convention, or the guard enumerates a path nobody agreed.
+mapbody=$(cat docs/SYNC-CORRELATION.md)
+grep -qF -- '.claude/skills/packs/<pack-name>/' <<<"$mapbody" \
+  && ok "R-SP-1 the pack path convention is stated in the map the guard enumerates" \
+  || no "R-SP-1 the pack path convention is undeclared — the guard would enumerate a path nobody agreed"
+grep -qF -- 'proposal-only under A4a' <<<"$mapbody" \
+  && ok "R-SP-1 A4a is recorded: declaring a pack grants no credentials" \
+  || no "R-SP-1 A4a constraint absent from the map"
+
+echo
 echo "== E. release trail =="
 TRAIL="logs/release-audit.jsonl"
 n=0; [ -f "$TRAIL" ] && n=$(grep -c . "$TRAIL" 2>/dev/null); n=${n:-0}
