@@ -93,3 +93,9 @@
 - **Census 9 → 0.** A naive stripper reported 4; the accurate one found 9 — this repo's own idiom hid five of nine.
 - **Counts:** validate-lite 40 → **41** (+1 rule-5) · layer2 35 → **38** (+3 witness) · sync 52, distill 11, stress 14, tracked 42 unchanged.
 - **Next action:** await `APPROVE LITE-SYNC-2` to close the gate record.
+
+## [LITE-SYNC-2|2026-08-23T08:44:40Z] GATE-LITE-SYNC-2 CLOSED — APPROVED
+- **Token:** `APPROVE LITE-SYNC-2` @ 2026-08-23T08:44:40Z. The row records that the work commit preceded it; the approval closes the record rather than retroactively authorising the order.
+- **Verified at close:** verify.sh layer1 **41/1/0** · sync **52/0** · distill **11/0** · stress **14/0** · layer2 **38/0/0** · no signal. 42 tracked, clean.
+- **R-SD-1 v2 now enforced in both builds** with byte-identical rule text and two class assertions each; census zero in both.
+- **Next action:** none open. Operator's AFTER step: replace `MASTER_FIFO_PLAN_CLAUDE.md` with v3.4 (DIRECTORY_GUIDE unchanged this revision).
