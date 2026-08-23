@@ -174,6 +174,39 @@ rm -rf "$CT"
 ./scripts/continuity.sh heartbeat not-an-agent working >/dev/null 2>&1 \
   && no "heartbeat accepted an unknown agent name" \
   || ok "heartbeat rejects an agent outside the roster"
+# The durable record: a history that accepts fixture data is a history nobody can trust, which is
+# what C-14 recorded when synthetic records entered a live trail. `record` must refuse outside a git
+# work tree, because that is where fixtures and stress harnesses run.
+DT=$(mktemp -d); mkdir -p "$DT/scripts" "$DT/docs" "$DT/logs"
+cp scripts/continuity.sh "$DT/scripts/"; cp GATES.md PROGRESS.md "$DT/" 2>/dev/null
+( cd "$DT" && ./scripts/continuity.sh record >/dev/null 2>&1 ) \
+  && no "record accepted a fixture root — the durable history would carry synthetic checkpoints" \
+  || ok "record refuses outside a git work tree (fixture data cannot enter the durable history)"
+[ -s "$DT/docs/session-history.jsonl" ] \
+  && no "record wrote to the fixture's durable history despite refusing" \
+  || ok "the refused record wrote nothing at all"
+rm -rf "$DT"
+# Confirm-it-landed, and the durable line must parse with its required fields. The L2 history write
+# once reported success while appending nothing.
+sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'durable record did NOT land' \
+  && ok "record confirms its line landed rather than assuming it" \
+  || no "record does not confirm the write landed"
+if [ -s docs/session-history.jsonl ]; then
+  jq -e '.commit and .phase and .event=="checkpoint"' docs/session-history.jsonl >/dev/null 2>&1 \
+    && ok "every durable checkpoint carries commit, phase and event ($(grep -c . docs/session-history.jsonl) recorded)" \
+    || no "a durable checkpoint is missing required fields"
+else
+  sk "no durable checkpoint recorded yet — nothing to validate"
+fi
+# Seance must LABEL which store answered. An unlabelled result set looks complete on a machine
+# where it is not, and the durable half is all a fresh clone has.
+sed 's/#.*//' scripts/continuity.sh | grep -qF -- '[durable: survives a clone]' \
+  && ok "seance labels durable hits so a successor can tell what travels" \
+  || no "seance does not distinguish durable from runtime results"
+sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'does not travel to a fresh clone' \
+  && ok "seance says so when every hit is runtime-only" \
+  || no "seance is silent when its answer would not travel"
+
 sed 's/#.*//' scripts/continuity.sh | grep -qF -- 'write divergence, not a stall' \
   && ok "stall detection distinguishes divergence from a stall (never one store)" \
   || no "stall detection lost the divergence branch — it would escalate from a single store"

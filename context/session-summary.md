@@ -8,7 +8,7 @@ checked by `./scripts/distill.sh check`.
 
 **verified** — psychic-crew-lite: a four-agent IT-automation crew derived from psychic-crew, with a
 human gate on every phase. Claude Code is the runtime, so hooks fire and the enforcement layer
-travels. **40** tracked files.
+travels. **41** tracked files.
 
 **verified** — There is no arbiter. Neither producer releases its own output: `verifier` releases
 `security`'s findings and `security` releases `verifier`'s, with `released_by` required to differ
@@ -28,7 +28,7 @@ of the design and the reason the rule is stated rather than left to the implemen
 
 ## Verification — three layers
 
-**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **28** attested corrections,
+**verified** — Layer 1 is behavioural. Layer 2 is the witness manifest: **32** attested corrections,
 each bound to a marker searched in comment-stripped code and pinned to a content hash, so an edit
 makes an entry `STALE` rather than letting a stale attestation coast. Layer 3 is the temporal
 history in `docs/verification-history.jsonl` — append-only and commit-stamped, so a regression is
@@ -36,7 +36,7 @@ bisected rather than argued. Regression is judged against a rolling median, not 
 
 ## Correlation with the parent
 
-**verified** — `docs/SYNC-CORRELATION.md` holds **47** sync map rows under four relations:
+**verified** — `docs/SYNC-CORRELATION.md` holds **48** sync map rows under four relations:
 MIRRORED, ADAPTED, DROPPED and ADDED. `security.md` is ADAPTED because byte-identity shipped
 references to an arbiter this build does not have, while its severity table stays pinned
 byte-identical — two builds that disagree about `crit` cannot exchange findings.
@@ -47,9 +47,17 @@ byte-identical — two builds that disagree about `crit` cannot exchange finding
 single store: a stale heartbeat beside live filesystem activity is write divergence, not a stuck
 agent. The orchestrator may not run its own stall check.
 
-**proposed** — Seance and the heartbeat log live in gitignored `logs/`, so they are runtime state
-for one machine rather than history that survives a clone. Whether any of it should become durable
-is an open question for L4.
+**verified** — The continuity record is split on purpose. The raw heartbeat log stays runtime and
+gitignored: tracking chatter means a diff per heartbeat and a conflict per parallel session, and it
+would put runtime state and history in one artifact, which is the defect where no reader can tell
+the two apart. What is durable is a recorded **checkpoint** — `docs/session-history.jsonl`, tracked
+and append-only, carrying the commit so a successor on a fresh clone can reconstruct and bisect.
+`record` refuses outside a git work tree, so fixture roots cannot enter the history, and confirms
+its line landed rather than assuming it.
+
+**verified** — Seance queries both stores and **labels which answered**. A successor elsewhere has
+only the durable half, and an unlabelled result set would look complete on a machine where it is
+not; when every hit is runtime-only, seance says the answer does not travel.
 
 ## Next action
 

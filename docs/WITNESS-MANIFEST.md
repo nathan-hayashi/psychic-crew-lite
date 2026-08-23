@@ -31,8 +31,8 @@ exercises this block, so it is data rather than decoration.
 # WITNESS-MANIFEST v1
 W-01	scripts/apply-models.sh	HITS="$HITS [$a -> $r]"	42cc93b744ad31d9
 W-02	hooks/model-guard.sh	. as $r	fde327eab7f92e8a
-W-03	scripts/validate-lite.sh	class resolution produced a model for all	b0fcbf51ab1b3a4d
-W-04	scripts/validate-lite.sh	every tracked hook is wired	b0fcbf51ab1b3a4d
+W-03	scripts/validate-lite.sh	class resolution produced a model for all	c688be0a0d65210b
+W-04	scripts/validate-lite.sh	every tracked hook is wired	c688be0a0d65210b
 W-05	hooks/_common.sh	PHASE="L?"	c6ad08a77c06404e
 W-06	hooks/_common.sh	deny-audit.jsonl	c6ad08a77c06404e
 W-07	hooks/release-guard.sh	released_by equals from_agent	411e4706d4470b62
@@ -41,22 +41,26 @@ W-09	scripts/check-sync.sh	ADDED row names a parent path	a2abbddf75cf9d86
 W-10	scripts/check-sync.sh	every comparison below would be vacuous	a2abbddf75cf9d86
 W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	1f035a0ac95a0bd4
 W-12	hooks/sensitive-guard.sh	writes to .env/secrets are blocked	4489ddd39bc978cd
-W-13	scripts/validate-lite.sh	denial records carry an L-series phase	b0fcbf51ab1b3a4d
+W-13	scripts/validate-lite.sh	denial records carry an L-series phase	c688be0a0d65210b
 W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	a2abbddf75cf9d86
 W-15	scripts/verify.sh	rolling-median	421f435cab54036d
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	39df0904728c69dc
 W-17	scripts/verify.sh	history did NOT record	421f435cab54036d
-W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	b0fcbf51ab1b3a4d
-W-19	scripts/continuity.sh	write divergence, not a stall	bd26005d09a54d2d
-W-20	scripts/continuity.sh	-path ./logs -prune	bd26005d09a54d2d
-W-21	scripts/continuity.sh	may not run its own stall check	bd26005d09a54d2d
+W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	c688be0a0d65210b
+W-19	scripts/continuity.sh	write divergence, not a stall	35519117d6e84070
+W-20	scripts/continuity.sh	-path ./logs -prune	35519117d6e84070
+W-21	scripts/continuity.sh	may not run its own stall check	35519117d6e84070
 W-22	scripts/distill.sh	UNBOUND claim(s) in the summary	0888230f5ae8f667
 W-23	scripts/distill.sh	unknown extractor	0888230f5ae8f667
 W-24	scripts/stress.sh	BLINDNESS BREACH	da3116dd268e0a84
 W-25	scripts/stress.sh	the live trail is never touched	da3116dd268e0a84
 W-26	scripts/stress.sh	a self-release was REFUSED by the shipped guard	da3116dd268e0a84
-W-27	scripts/validate-lite.sh	release trail is absent or empty	b0fcbf51ab1b3a4d
+W-27	scripts/validate-lite.sh	release trail is absent or empty	c688be0a0d65210b
 W-28	scripts/stress.sh	the union is what a single pass would have missed	da3116dd268e0a84
+W-29	scripts/continuity.sh	refusing to record: not a git work tree	35519117d6e84070
+W-30	scripts/continuity.sh	durable record did NOT land	35519117d6e84070
+W-31	scripts/continuity.sh	[durable: survives a clone]	35519117d6e84070
+W-32	scripts/continuity.sh	does not travel to a fresh clone	35519117d6e84070
 ```
 
 The fenced header above is `WITNESS-MANIFEST v1` and the extractor anchors on that exact versioned
@@ -97,3 +101,7 @@ fields naming a file that exists.
 | `W-26` | A self-release is refused by the **shipped guard** inside the run, not re-implemented by the harness. |
 | `W-27` | An empty release trail is announced, never passed. "No self-release in 0 lines" is trivially true. |
 | `W-28` | The two passes must find **different** defects, or the second bought nothing. |
+| `W-29` | The durable history refuses fixture roots. A history that accepts synthetic checkpoints is one nobody can trust. |
+| `W-30` | The durable write is **confirmed to have landed** — the L2 history once reported success while appending nothing. |
+| `W-31` | Seance labels which store answered, so a successor can tell what travels to a clone and what does not. |
+| `W-32` | Seance says so explicitly when every hit is runtime-only, rather than looking complete on the only machine that has them. |

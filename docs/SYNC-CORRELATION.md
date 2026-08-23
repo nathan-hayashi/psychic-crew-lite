@@ -61,6 +61,7 @@ ADDED	—	scripts/check-witness.sh
 ADDED	—	scripts/verify.sh
 ADDED	—	docs/WITNESS-MANIFEST.md
 ADDED	—	docs/verification-history.jsonl
+ADDED	—	docs/session-history.jsonl
 ADAPTED	hooks/pre-compact-checkpoint.sh	hooks/pre-compact-checkpoint.sh
 ADAPTED	scripts/restore-context.sh	scripts/restore-context.sh
 ADAPTED	scripts/save-context.sh	scripts/distill.sh

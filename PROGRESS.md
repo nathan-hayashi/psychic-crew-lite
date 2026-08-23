@@ -71,3 +71,10 @@
 - **Verified at close:** Lite verify.sh layer1 31/1/0 · sync 50/0 · distill 11/0 · stress 14/0 · layer2 28/0/0, no signal. Parent 43+1SKIP · **166** · 23 · PORTABLE.
 - **Phase:** L3 -> L4 on the approved row alone.
 - **Next action:** the Lite build is closed at L4. No phase is open. Remaining parent items: port the declared-binding distillation (finishes CR-034), and CR-024's extension to `hooks/` which needs an operator plan re-export (C-26).
+
+## [POST-L4|2026-08-23T00:01:12Z] Durability resolved — heartbeat split, seance labelled
+- **Answered:** the L3 `proposed` item. Raw heartbeat log stays runtime/gitignored; a recorded checkpoint is durable in `docs/session-history.jsonl` (tracked, append-only, commit-stamped).
+- **Carried forward:** `record` refuses fixture roots (C-14 pre-empted) and confirms its line landed (the L2 defect).
+- **Seance labels its stores** — `[durable: survives a clone]` vs `[runtime: this machine only]` — and says outright when an answer will not travel.
+- **Verified:** validate-lite **37 PASS / 1 SKIP / 0 FAIL** · sync 51/0 · distill 11/0 · stress 14/0 · layer2 **32/0/0** · no signal. 41 tracked.
+- **Next action:** no phase or gate open. Remaining operator decision: whether skill-packs open under the §7.1 correlation.
