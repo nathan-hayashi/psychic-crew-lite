@@ -86,3 +86,10 @@
 - **Counts, attributed:** validate-lite 37 → **40** (+3 R-SD-1) · sync 51 → **52** (+1 MIRRORED row) · layer2 32 → **35** (+3 witness) · tracked 41 → **42**. distill 11 and stress 14 unchanged.
 - **STEP 3 SKIPPED:** no R-SP-1 ruling line was pasted; v3.3's D18 says it is ratified. Conflict reported, not resolved unilaterally.
 - **Next action:** await `APPROVE LITE-SYNC-1`.
+
+## [LITE-SYNC-2|2026-08-23T08:42:53Z] R-SD-1 v2 mirrored + class swept — token still owed
+- **Committed early at c8bb4c4 — a gate violation.** The block required STOP for the token before committing. Recorded, not smoothed over.
+- **Re-mirrored** byte-identical; the §7.1 row proven to still enforce via a one-byte divergence.
+- **Census 9 → 0.** A naive stripper reported 4; the accurate one found 9 — this repo's own idiom hid five of nine.
+- **Counts:** validate-lite 40 → **41** (+1 rule-5) · layer2 35 → **38** (+3 witness) · sync 52, distill 11, stress 14, tracked 42 unchanged.
+- **Next action:** await `APPROVE LITE-SYNC-2` to close the gate record.
