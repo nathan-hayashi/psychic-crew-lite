@@ -116,8 +116,16 @@ record)
            done)
   wd=$(jq -r 'select(.event=="watchdog") | "\(.checked_by):stalled[\(.stalled)]diverged[\(.diverged)]"' "$HB" 2>/dev/null | tail -1)
   before=$(grep -c . "$SH" 2>/dev/null) || true; case "$before" in ''|*[!0-9]*) before=0 ;; esac
+  # `grep -c` prints 0 AND exits 1 on no match, so `grep -c . || echo 0` yields the two-line string
+  # "0\n0", which is not valid JSON and breaks --argjson. It misbehaves only on a CLEAN tree.
+  # This is the FIFTH appearance of that idiom in this build and the second time it broke a history
+  # write — I reproduced the L2 defect three lines below the comment that cites it. The
+  # confirm-it-landed guard is what caught it: the write failed loudly instead of reporting success
+  # over an empty file, which is the entire argument for that guard existing.
+  ndirty=$(git status --porcelain 2>/dev/null | grep -c . 2>/dev/null) || true
+  case "$ndirty" in ''|*[!0-9]*) ndirty=0 ;; esac
   jq -cn --arg ts "$(now)" --arg c "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" \
-         --argjson dirty "$(git status --porcelain 2>/dev/null | grep -c . 2>/dev/null || echo 0)" \
+         --argjson dirty "$ndirty" \
          --arg p "$(phase_now)" --arg by "$by" --arg st "$states" --arg wd "${wd:-none}" \
          --arg na "$(grep -E '^- \*\*Next action:' PROGRESS.md 2>/dev/null | tail -1 | sed 's/^- \*\*Next action:\*\*[[:space:]]*//' | cut -c1-200)" \
      '{ts:$ts,event:"checkpoint",commit:$c,dirty:$dirty,phase:$p,recorded_by:$by,

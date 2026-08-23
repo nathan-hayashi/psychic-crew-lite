@@ -47,9 +47,9 @@ W-15	scripts/verify.sh	rolling-median	421f435cab54036d
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	39df0904728c69dc
 W-17	scripts/verify.sh	history did NOT record	421f435cab54036d
 W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	c688be0a0d65210b
-W-19	scripts/continuity.sh	write divergence, not a stall	35519117d6e84070
-W-20	scripts/continuity.sh	-path ./logs -prune	35519117d6e84070
-W-21	scripts/continuity.sh	may not run its own stall check	35519117d6e84070
+W-19	scripts/continuity.sh	write divergence, not a stall	f4a93a8cfc6f01a8
+W-20	scripts/continuity.sh	-path ./logs -prune	f4a93a8cfc6f01a8
+W-21	scripts/continuity.sh	may not run its own stall check	f4a93a8cfc6f01a8
 W-22	scripts/distill.sh	UNBOUND claim(s) in the summary	0888230f5ae8f667
 W-23	scripts/distill.sh	unknown extractor	0888230f5ae8f667
 W-24	scripts/stress.sh	BLINDNESS BREACH	da3116dd268e0a84
@@ -57,10 +57,10 @@ W-25	scripts/stress.sh	the live trail is never touched	da3116dd268e0a84
 W-26	scripts/stress.sh	a self-release was REFUSED by the shipped guard	da3116dd268e0a84
 W-27	scripts/validate-lite.sh	release trail is absent or empty	c688be0a0d65210b
 W-28	scripts/stress.sh	the union is what a single pass would have missed	da3116dd268e0a84
-W-29	scripts/continuity.sh	refusing to record: not a git work tree	35519117d6e84070
-W-30	scripts/continuity.sh	durable record did NOT land	35519117d6e84070
-W-31	scripts/continuity.sh	[durable: survives a clone]	35519117d6e84070
-W-32	scripts/continuity.sh	does not travel to a fresh clone	35519117d6e84070
+W-29	scripts/continuity.sh	refusing to record: not a git work tree	f4a93a8cfc6f01a8
+W-30	scripts/continuity.sh	durable record did NOT land	f4a93a8cfc6f01a8
+W-31	scripts/continuity.sh	[durable: survives a clone]	f4a93a8cfc6f01a8
+W-32	scripts/continuity.sh	does not travel to a fresh clone	f4a93a8cfc6f01a8
 ```
 
 The fenced header above is `WITNESS-MANIFEST v1` and the extractor anchors on that exact versioned
