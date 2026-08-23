@@ -259,6 +259,35 @@ grep -qF -- 'write divergence, not a stall' <<<"$(sed 's/#.*//' scripts/continui
   || no "stall detection lost the divergence branch — it would escalate from a single store"
 
 echo
+echo "== G. gate-order guard (H0a, MIRRORED) =="
+# Mirrors the parent's assertion. The guard exists because a session — this one — committed before
+# the operator's token at LITE-SYNC-2. It is MIRRORED byte-identical, so check-sync already proves
+# the bytes; what this proves is that the thing is present, executable, and that its refusal branch
+# actually reads the ledger. A guard that exits 0 unconditionally satisfies every caller.
+GG="scripts/gate-guard.sh"
+[ -x "$GG" ] && ok "H0a gate-guard present and executable" || no "H0a gate-guard missing or not executable"
+_hg1="GATE""S.md"; _hg2="REFU""SED"; _hg3="APPRO""VED"
+ggbody=$(sed -E "$_sdstrip" "$GG" 2>/dev/null)
+ggmiss=""
+for nd in "$_hg1" "$_hg2" "$_hg3"; do
+  grep -qF -- "$nd" <<<"$ggbody" || ggmiss="$ggmiss [$nd]"
+done
+[ -z "$ggmiss" ] \
+  && ok "H0a refusal branch reads the ledger and keys on the approval marker" \
+  || no "H0a gate-guard is missing load-bearing logic:$ggmiss — it would pass every caller"
+# It must also obey the rule this repo enforces on everything else.
+# CAPTURE, THEN TEST. The first version of this line was `grep -c … | grep -qx 0`, which is BOTH a
+# rule-5 violation and broken by rule 5: grep -c prints 0 and exits nonzero on no match, pipefail
+# surfaces that, and the assertion failed on a guard that was perfectly clean. The rule-5 class
+# assertion caught it and named this file and line, minutes after it was written — the guard working
+# against its own author, which is the only test of a guard that counts.
+ggq=$(grep -cE '\|[[:space:]]*grep[[:space:]]+-[a-zA-Z]*q' <<<"$ggbody") || true
+case "$ggq" in ''|*[!0-9]*) ggq=0 ;; esac
+[ "$ggq" = 0 ] \
+  && ok "H0a gate-guard itself obeys R-SD-1 rule 5" \
+  || no "H0a gate-guard violates the rule this repo enforces on every other script ($ggq site(s))"
+
+echo
 echo "== F. rulings (R-SP-1) =="
 # The detector reads the guard's LOGIC, never a token: a file that merely mentions the ruling
 # satisfies a grep and guards nothing, which is the shape the parent's audit found twice.

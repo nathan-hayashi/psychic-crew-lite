@@ -113,3 +113,15 @@
 - **Verified at close:** verify.sh layer1 **47/1/0** · sync **54/0** · distill **11/0** · stress **14/0** · layer2 **42/0/0** · no signal. 43 tracked.
 - **Skill-packs are open** under §7.1, class-guarded disk→map, with A4a intact — declaring a pack grants visibility, never credentials.
 - **Next action:** no phase or gate open in either repo. The first pack, when it lands, needs a `PACK` row, a recorded why, and its own per-pack gate under A4a.
+
+## [LITE-GUARD-1|2026-08-23T09:29:02Z] Gate-order guard mirrored — awaiting the closing token
+- **Mirrored** byte-identical, declared §7.1 MIRRORED, enforcement proven by one-byte divergence.
+- **Controls 3/3.** From this commit on, every gated Lite commit is guard-fronted.
+- **The class assertion caught my own violation** at `validate-lite.sh:279` — a probe written in the very class it was hunting.
+- **Counts:** validate-lite 47 → **50** (+3 H0a) · sync 54 → **55** · layer2 42 → **44** · tracked 43 → **44**.
+- **NOT COMMITTED — awaiting `APPROVE LITE-GUARD-1`.** The guard now enforces this mechanically.
+
+## [LITE-GUARD-1|2026-08-23T09:31:09Z] GATE LITE-GUARD-1 CLOSED — APPROVED
+- **Token:** `APPROVE LITE-GUARD-1` @ 2026-08-23T09:31:09Z. First Lite commit fronted by the guard, which refused until the row was approved.
+- **Verified:** verify.sh layer1 **50/1/0** · sync **55/0** · distill 11/0 · stress 14/0 · layer2 **44/0/0** · no signal. 44 tracked.
+- **Next action:** BLOCK 3 — PACK-CONFLUENCE-1, the first per-pack gate under R-SP-1.

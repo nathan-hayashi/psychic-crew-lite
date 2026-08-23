@@ -54,6 +54,7 @@ decoration — change a row and the check changes with it.
 ADAPTED	.claude/rules/security.md	.claude/rules/security.md
 MIRRORED	.claude/rules/fallback-protocol.md	.claude/rules/fallback-protocol.md
 MIRRORED	.claude/rules/shell-discipline.md	.claude/rules/shell-discipline.md
+MIRRORED	scripts/gate-guard.sh	scripts/gate-guard.sh
 MIRRORED	.gitattributes	.gitattributes
 ADAPTED	.claude/rules/model-policy.md	.claude/rules/model-policy.md
 ADAPTED	scripts/apply-models.sh	scripts/apply-models.sh
