@@ -55,6 +55,7 @@ ADAPTED	.claude/rules/security.md	.claude/rules/security.md
 MIRRORED	.claude/rules/fallback-protocol.md	.claude/rules/fallback-protocol.md
 MIRRORED	.claude/rules/shell-discipline.md	.claude/rules/shell-discipline.md
 MIRRORED	scripts/gate-guard.sh	scripts/gate-guard.sh
+MIRRORED	.claude/rules/secrets-contract.md	.claude/rules/secrets-contract.md
 MIRRORED	.gitattributes	.gitattributes
 ADAPTED	.claude/rules/model-policy.md	.claude/rules/model-policy.md
 ADAPTED	scripts/apply-models.sh	scripts/apply-models.sh
@@ -85,6 +86,8 @@ ADDED	—	docs/WITNESS-MANIFEST.md
 ADDED	—	docs/verification-history.jsonl
 ADDED	—	docs/session-history.jsonl
 ADDED	—	docs/RULINGS.md
+ADAPTED	docs/security/redteam-1.md	docs/security/redteam-1.md
+DROPPED	docs/security/threat-model.md	—
 PACK	—	.claude/skills/packs/confluence-docs
 ADAPTED	hooks/pre-compact-checkpoint.sh	hooks/pre-compact-checkpoint.sh
 ADAPTED	scripts/restore-context.sh	scripts/restore-context.sh
@@ -133,6 +136,13 @@ DROPPED	hooks/pre-compact-checkpoint.sh	—
   a separate agent, which is what ruling B1a's roster and the operator's §8 answer combine to.
 - **`integration-runner.md`** — `verifier` absorbs end-to-end runs; at four agents a dedicated
   runner is a hop, not a boundary.
+
+- **`docs/security/threat-model.md`** — the parent's threat model is **jointly scoped**: its title
+  line covers psychic-crew *and* psychic-crew-lite, and its surfaces table already carries the Lite
+  rows. A second copy here would be two documents describing one model, free to disagree — which is
+  the drift §7.1 exists to prevent. Lite's `redteam-1.md` is `ADAPTED` rather than `MIRRORED` for
+  the opposite reason: a red-team pass is a record of what was attacked *in this repo*, so the two
+  files must differ.
 
 ## Not yet mapped
 

@@ -19,4 +19,5 @@ node_modules/
 .claude/skills/packs/*/inbox/
 .claude/skills/packs/*/work/
 .claude/skills/packs/*/out/
+.claude/skills/packs/*/drills/
 logs/pack-*.jsonl

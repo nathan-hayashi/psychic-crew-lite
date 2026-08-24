@@ -138,3 +138,29 @@
 - **Verified:** verify.sh layer1 **55/1/0** · sync **56/0** · distill 11/0 · stress 14/0 · layer2 **48/0/0** · no signal. 48 tracked.
 - **Fixture artifacts cleared** from the workspaces after the gate so the operator's first real export starts clean. The runtime audit line is kept: it carries counts, never text.
 - **Next action:** operator places the v3.5 plan/map pair, then exports one internal document into `.claude/skills/packs/confluence-docs/inbox/` and runs the pack.
+
+## [LITE-SECURITY-1|2026-08-24T01:34:06Z] Security phase complete — awaiting the closing token
+- **Mirrored:** `.claude/rules/secrets-contract.md` byte-identical (sha256 `ebc39d9d85e9ddbf` both sides), §7.1 MIRRORED, one-byte divergence FAILs by name.
+- **Threat model is JOINT and lives in the parent only** — mapped `DROPPED` with its reason: two copies of one model are free to disagree. `redteam-1.md` is `ADAPTED`, because a red-team record must differ per repo.
+- **Three findings, all fixed.** F-L1 `continuity.sh` wrote the heartbeat note and the durable next-action **unredacted into a tracked, public file**; now sourced through `_common.sh`'s scrubber, failing **closed**. F-L2 the drill ran in the LIVE pack and **destroyed the operator's four artifacts** — C-13 class. F-L3 the drill's own measurement was unfaithful twice: a dotfile-named fixture was silently skipped by `*.md`, and the routing tally counted a word inside a justification.
+- **Live drill 6/6:** every fixture surfaced as a finding, every one routed `INTERNAL-IT` including the fixture demanding `EXTERNAL-PUBLIC`, nothing executed or fetched, zero artifacts outside `work/`/`out/`, stage probe **zero**.
+- **Ruling R-PD-1** recorded: packs #2+ deferred behind this gate, cap keyed on the ledger, failing closed on a missing ledger. Pack #1 own-documents-only until the token.
+- **Counts:** validate-lite 55 → **62** · sync 56 → **60** · distill 11 → **12** · layer2 48 → **48** · tracked 48 → **57**.
+- **NOT COMMITTED — awaiting `APPROVE LITE-SECURITY-1`;** the guard enforces it.
+- **Next action:** operator issues `APPROVE LITE-SECURITY-1`, then the guard-fronted commit and push; afterwards the v3.6 plan/map pair.
+
+## [LITE-SECURITY-1|2026-08-24T01:35:27Z] Post-compaction checkpoint refresh — state confirmed on disk (§15.3)
+- **Re-verified after the ledger writes, not assumed from the entry above:** `verify.sh` exit 0 — layer1 **62/1/0** · sync **60/0** · distill **12/0** · stress **14/0** · layer2 **48/0/0**, no signal.
+- **Witness manifest re-stamped** after this block's edits: 30 STALE → **48 OK / 0 STALE / 0 FAIL**. Every stale entry traced to one of four files this block actually changed (`validate-lite.sh`, `continuity.sh`, `check-sync.sh`, `distill.sh`) — checked before refreshing, because a stale hash on an untouched file would mean something moved outside my knowledge. Manifest integrity confirmed intact (127 lines, 48 rows) given the past refresh that destroyed the file.
+- **Publication safety, final:** 0 tracked files under any pack workspace · 0 would-be-staged workspace paths · 0 tracked files quoting the operator's document title.
+- **`gate-guard.sh` refuses** and names the awaiting row. Nothing committed, nothing pushed.
+- **Operator's four artifacts were re-derived, not restored** — the only irreversible loss in this block, recorded in `docs/security/redteam-1.md` F-L2 and in the proposal's own header.
+- **Next action:** operator issues `APPROVE LITE-SECURITY-1`, then the guard-fronted commit and push, then the durable `continuity.sh record` checkpoint (deferred until the tree is committed), then the v3.6 plan/map pair.
+
+## [LITE-SECURITY-1|2026-08-24T01:37:38Z] GATE CLOSED — APPROVED, and the closing found a fourth defect
+- **Token:** `APPROVE LITE-SECURITY-1` @ 2026-08-24T01:36:16Z, guard-fronted.
+- **F-L4, found by the gate itself:** the R-PD-1 cap keyed on `LITE-SECURITY-1` where the ledger writes `APPROVE LITE-SECURITY-1`, so it could never have lifted — and it said "security phase still open" while wrong. Fail-safe direction, which is why it would have survived. Fixed; **both directions now demonstrated against the real row** — approved → `LIFTED`, row removed + 2 packs → `VIOLATED` naming the phantom.
+- **Witness re-stamped** after the fix: 8 STALE → **48 OK / 0 STALE / 0 FAIL**, all 8 traced to `check-sync.sh`, manifest intact.
+- **Final:** `verify.sh` exit 0 — layer1 **62/1/0** · sync **60/0** · distill **12/0** · stress **14/0** · layer2 **48/0/0**, no signal.
+- **Restrictions lifted by this token:** pack #1 is no longer own-documents-only; the R-PD-1 cap now permits a second pack.
+- **Next action:** operator places the v3.6 plan/map pair and confirms delta 0.

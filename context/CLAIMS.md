@@ -29,6 +29,7 @@ CL-01	tracked files	tracked
 CL-02	attested corrections	attested
 CL-03	wired hook commands	hooks_wired
 CL-04	sync map rows	map_rows
+CL-05	attack fixtures	fixtures
 ```
 
 | extractor | reads |
@@ -37,6 +38,7 @@ CL-04	sync map rows	map_rows
 | `attested` | the `WITNESS-MANIFEST v1` block |
 | `hooks_wired` | `.claude/settings.json` hook commands |
 | `map_rows` | the `SYNC-MAP v1` block |
+| `fixtures` | tracked `.md` under any pack's `fixtures/attack/`, excluding its README |
 | `gate_ts` | the newest approved L-gate timestamp in `GATES.md` |
 | `phase` | the newest approved L-gate id |
 

@@ -157,6 +157,32 @@ else
     || fail "R-SP-1 UNDECLARED pack(s) on disk — the map does not mention:[$undeclared] (add a PACK row and its why)"
 fi
 
+# R-PD-1 PACK CAP — packs #2 and beyond are deferred behind the security phase. Pack #1 was gated
+# before a threat model existed for the intake path it opened; the ruling stops that ordering
+# becoming the precedent that scales. The cap lifts MECHANICALLY, on an APPROVED row, never on
+# anyone's recollection of what was agreed.
+PD_LEDGER="GATES.md"
+# The token INCLUDES its verb — the ledger records `APPROVE LITE-SECURITY-1`, not the bare gate
+# name. Keying on the bare name matched nothing and the cap stayed shut while reporting normally,
+# which is the fail-safe direction and still wrong: a guard that can never lift is not a guard.
+PD_NEEDLE="**APPROVED** \`APPROVE LITE-SECURITY-1\`"
+if [ -f "$PD_LEDGER" ]; then
+  pd_rows=$(grep -cF -- "$PD_NEEDLE" "$PD_LEDGER" || true)
+else
+  # Fail CLOSED. A missing ledger is not an approval, and between two readings the strict one is the
+  # only safe default — the permissive one would lift the cap by deleting a file.
+  pd_rows=0
+fi
+case "$pd_rows" in ''|*[!0-9]*) pd_rows=0 ;; esac
+if [ "$pd_rows" -gt 0 ]; then
+  pass "R-PD-1 cap LIFTED — LITE-SECURITY-1 approved in $PD_LEDGER; further packs permitted ($np_disk on disk)"
+elif [ "$np_disk" -le 1 ]; then
+  pass "R-PD-1 pack cap armed and observed — $np_disk pack(s) on disk, security phase still open"
+else
+  pd_extra=$(printf '%s\n' "$packs_disk" | tail -n +2 | tr '\n' ' ')
+  fail "R-PD-1 VIOLATED — $np_disk packs on disk with the security phase open; defer:[$pd_extra] until LITE-SECURITY-1 is approved"
+fi
+
 # Vocabulary parity, a targeted byte-check inside an ADAPTED file. security.md was MIRRORED until
 # L1 and was reclassified because byte-identity shipped references to an arbiter this build does
 # not have. What mattered about MIRRORED was not the whole file — it was that two builds exchanging

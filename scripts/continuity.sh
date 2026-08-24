@@ -31,6 +31,22 @@ STALE_S="${LITE_STALL_SECONDS:-900}"
 AGENTS="session-orchestrator builder verifier security"
 now () { date -u +%Y-%m-%dT%H:%M:%SZ; }
 
+# R-SEC-1 rule 3 — REDACTION IS ENFORCED, NOT PROMISED, and this script was writing raw.
+# Measured at LITE-SECURITY-1: `continuity.sh heartbeat <agent> <state> "<note>"` wrote the note
+# verbatim into logs/heartbeats.jsonl, and `record` copies PROGRESS.md's next-action line into
+# docs/session-history.jsonl — which is TRACKED, and this repo's remote is PUBLIC. A token pasted
+# into a note or a ledger line would have been committed.
+#
+# The shared scrubber is SOURCED rather than reimplemented. A second copy of a redaction pattern is
+# two implementations that drift, which is the defect class this build has recorded repeatedly; the
+# hook preamble already carries the reviewed one.
+. "$(dirname "$0")/../hooks/_common.sh" 2>/dev/null || true
+if ! command -v scrub >/dev/null 2>&1; then
+  # Fails CLOSED and says so: writing raw because the scrubber is unavailable is exactly the
+  # outcome rule 3 forbids.
+  scrub () { printf '%s' '[REDACTED-SCRUB-UNAVAILABLE]'; }
+fi
+
 # R-SD-1 rule 2 — capture, then validate, before the value reaches any consumer. Both call sites
 # below previously used the forbidden count-then-default composite: guarded by [ -f ] they were
 # safe on a MISSING file, but on a present-and-EMPTY one grep -c prints 0, exits nonzero, and the
@@ -50,7 +66,7 @@ heartbeat)
   a="${2:?agent required}"; s="${3:?state required}"; n="${4:-}"
   case " $AGENTS " in *" $a "*) ;; *) echo "[FAIL] unknown agent '$a' (expected: $AGENTS)"; exit 64 ;; esac
   mkdir -p logs
-  jq -cn --arg ts "$(now)" --arg a "$a" --arg s "$s" --arg n "$n" --arg p "$(phase_now)" \
+  jq -cn --arg ts "$(now)" --arg a "$a" --arg s "$s" --arg n "$(scrub "$n")" --arg p "$(phase_now)" \
      '{ts:$ts,event:"heartbeat",agent:$a,state:$s,note:$n,phase:$p}' >> "$HB"
   echo "  [ok] heartbeat $a=$s"
   ;;
@@ -134,7 +150,7 @@ record)
   jq -cn --arg ts "$(now)" --arg c "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" \
          --argjson dirty "$ndirty" \
          --arg p "$(phase_now)" --arg by "$by" --arg st "$states" --arg wd "${wd:-none}" \
-         --arg na "$(grep -E '^- \*\*Next action:' PROGRESS.md 2>/dev/null | tail -1 | sed 's/^- \*\*Next action:\*\*[[:space:]]*//' | cut -c1-200)" \
+         --arg na "$(scrub "$(grep -E '^- \*\*Next action:' PROGRESS.md 2>/dev/null | tail -1 | sed 's/^- \*\*Next action:\*\*[[:space:]]*//')")" \
      '{ts:$ts,event:"checkpoint",commit:$c,dirty:$dirty,phase:$p,recorded_by:$by,
        agent_states:$st,watchdog:$wd,next_action:$na}' >> "$SH"
   # CONFIRM IT LANDED. The L2 history write once reported success while appending nothing, because a

@@ -35,6 +35,7 @@ truth () { # $1 = extractor name -> prints the true value, or nothing if unknown
     attested)     awk '/^# WITNESS-MANIFEST v[0-9]+$/{f=1;next} f&&/^```/{exit} f&&NF&&!/^#/' docs/WITNESS-MANIFEST.md 2>/dev/null | grep -c . ;;
     hooks_wired)  jq -r '.hooks|to_entries[]|.value[]|.hooks[]|.command' .claude/settings.json 2>/dev/null | grep -c . ;;
     map_rows)     awk '/^# SYNC-MAP v[0-9]+$/{f=1;next} f&&/^```/{exit} f&&NF' docs/SYNC-CORRELATION.md 2>/dev/null | grep -c . ;;
+    fixtures)     git ls-files '.claude/skills/packs/*/fixtures/attack/*.md' 2>/dev/null | grep -v '/README.md$' | grep -c . ;;
     *)            return 1 ;;
   esac
 }

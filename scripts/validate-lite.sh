@@ -259,6 +259,36 @@ grep -qF -- 'write divergence, not a stall' <<<"$(sed 's/#.*//' scripts/continui
   || no "stall detection lost the divergence branch — it would escalate from a single store"
 
 echo
+echo "== I. secrets contract (R-SEC-1) =="
+[ -f .claude/rules/secrets-contract.md ] && ok "R-SEC-1 contract present (MIRRORED from the parent)" \
+                                         || no "R-SEC-1 contract missing — rule 1 has no written home"
+# RULE 1 — zero is the default. Nothing token-shaped may exist anywhere in the tracked tree. This is
+# the assertion that would have caught a credential pasted into a ledger, which is the realistic way
+# one arrives in a repo that has none.
+_r1="gh""p_"; _r2="xox""b-"; _r3="AKI""A"; _r4="-----BEG""IN"
+sec_hits=$(git grep -lE "${_r1}[A-Za-z0-9]{20,}|${_r2}[A-Za-z0-9]{10,}|${_r3}[A-Z0-9]{16}|${_r4} [A-Z ]*PRIVATE KEY" -- . 2>/dev/null | grep -v '^\.claude/rules/secrets-contract\.md$' | tr '\n' ' ')
+[ -z "$sec_hits" ] && ok "R-SEC-1 rule 1: no credential-shaped value in any tracked file" \
+                   || no "R-SEC-1 rule 1 VIOLATED — credential-shaped value in: $sec_hits"
+# RULE 3 — proved by writing planted fakes THROUGH each writer and reading back. Grepping the
+# writers for "scrub" reports green for one that calls it on the wrong variable; this repo's own
+# continuity.sh passed that reading while writing notes verbatim.
+rsroot=$(mktemp -d); mkdir -p "$rsroot/logs"; cp GATES.md models.config.json "$rsroot/" 2>/dev/null
+rstok="${_r1}RSEC1LITEAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+rsleak=""
+rg1=git; rg2=clone
+printf '%s' "$(jq -cn --arg c "$rg1 $rg2 https://x@h.invalid/r?t=$rstok" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+  | CLAUDE_PROJECT_DIR="$rsroot" ./hooks/bash-blocker.sh >/dev/null 2>&1
+grep -qF -- "$rstok" "$rsroot/logs/deny-audit.jsonl" 2>/dev/null && rsleak="$rsleak [deny]"
+# continuity's heartbeat note — operator-supplied text straight into a log.
+hbprobe=$(mktemp -d); mkdir -p "$hbprobe/logs" "$hbprobe/scripts" "$hbprobe/hooks"
+cp scripts/continuity.sh "$hbprobe/scripts/"; cp hooks/_common.sh "$hbprobe/hooks/"; cp GATES.md PROGRESS.md "$hbprobe/" 2>/dev/null
+( cd "$hbprobe" && ./scripts/continuity.sh heartbeat verifier working "tok $rstok" >/dev/null 2>&1 )
+grep -qF -- "$rstok" "$hbprobe/logs/heartbeats.jsonl" 2>/dev/null && rsleak="$rsleak [continuity-heartbeat]"
+rm -rf "$rsroot" "$hbprobe"
+[ -z "$rsleak" ] && ok "R-SEC-1 rule 3: a planted token survives no Lite writer (deny, heartbeat note)" \
+                 || no "R-SEC-1 rule 3 VIOLATED — planted token written verbatim by:$rsleak"
+
+echo
 echo "== H. skill packs (R-SP-1 / P1a P2a P3a) =="
 # PUBLICATION SAFETY IS THE HARD LINE. This repository is PUBLIC, and a pack reads real internal
 # documents. Everything a pack reads or writes must be unstageable, and that has to be an assertion
@@ -377,6 +407,18 @@ grep -qF -- '.claude/skills/packs/<pack-name>/' <<<"$mapbody" \
 grep -qF -- 'proposal-only under A4a' <<<"$mapbody" \
   && ok "R-SP-1 A4a is recorded: declaring a pack grants no credentials" \
   || no "R-SP-1 A4a constraint absent from the map"
+# R-PD-1, same detector shape and for the same reason: proving the cap behaviourally in-suite needs
+# a phantom directory in the live tree, which is the C-13/C-14 class. The behavioural proof is the
+# gate control, run by hand and recorded in docs/security/redteam-1.md.
+for needle in 'R-PD-1 VIOLATED' 'cap LIFTED' 'pack cap armed and observed'; do
+  grep -qF -- "$needle" <<<"$csbody" \
+    && ok "R-PD-1 cap guard carries the branch: ${needle}" \
+    || no "R-PD-1 cap guard is missing the branch: ${needle}"
+done
+# The cap must key on the ledger, not on a count someone maintains by hand.
+grep -qF -- 'LITE-SECURITY-1' <<<"$csbody" \
+  && ok "R-PD-1 the cap lifts on an APPROVED ledger row, not on recollection" \
+  || no "R-PD-1 the cap has no ledger binding — it could not lift or hold mechanically"
 
 echo
 echo "== E. release trail =="

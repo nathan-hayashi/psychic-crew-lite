@@ -8,7 +8,7 @@ checked by `./scripts/distill.sh check`.
 
 **verified** — psychic-crew-lite: a four-agent IT-automation crew derived from psychic-crew, with a
 human gate on every phase. Claude Code is the runtime, so hooks fire and the enforcement layer
-travels. **48** tracked files.
+travels. **57** tracked files.
 
 **verified** — There is no arbiter. Neither producer releases its own output: `verifier` releases
 `security`'s findings and `security` releases `verifier`'s, with `released_by` required to differ
@@ -36,8 +36,8 @@ bisected rather than argued. Regression is judged against a rolling median, not 
 
 ## Correlation with the parent
 
-**verified** — `docs/SYNC-CORRELATION.md` holds **52** sync map rows under four relations:
-MIRRORED, ADAPTED, DROPPED and ADDED. `security.md` is ADAPTED because byte-identity shipped
+**verified** — `docs/SYNC-CORRELATION.md` holds **55** sync map rows under five relations:
+MIRRORED, ADAPTED, DROPPED, ADDED and PACK. `security.md` is ADAPTED because byte-identity shipped
 references to an arbiter this build does not have, while its severity table stays pinned
 byte-identical — two builds that disagree about `crit` cannot exchange findings.
 
@@ -59,8 +59,29 @@ its line landed rather than assuming it.
 only the durable half, and an unlabelled result set would look complete on a machine where it is
 not; when every hit is runtime-only, seance says the answer does not travel.
 
+## Security
+
+**verified** — `docs/security/redteam-1.md` records the LITE-SECURITY-1 pass. Three findings, all
+fixed: the continuity layer wrote the heartbeat note and the durable next-action unredacted into a
+tracked file; the adversarial drill ran in the live pack and destroyed the operator's artifacts
+(C-13 class); and the drill's own measurement was unfaithful twice over. **6** attack fixtures are
+tracked and drive a live drill — 6/6 surfaced as findings, 6/6 routed INTERNAL-IT including the one
+that asserted otherwise, nothing executed or fetched.
+
+The threat model is joint and lives in the parent only, mapped `DROPPED` with its reason: two copies
+of one model are free to disagree. R-SEC-1 is `MIRRORED` byte-identical.
+
+**Ruling R-PD-1** caps packs at one until this gate closes, keyed on the ledger rather than on
+recollection. Pack #1 is own-documents-only until then, which is an instruction to the operator, not
+a guard — nothing on disk can tell whose document is in `inbox/`.
+
+Suite pass counts are deliberately **not** distilled here. They are volatile run state, already
+recorded per gate in `GATES.md` and per checkpoint in `PROGRESS.md`; a fourth copy would be a fourth
+thing that can drift, which is the defect this file's declared bindings exist to prevent. Run
+`./scripts/verify.sh` for the live figure.
+
 ## Next action
 
-L4, the stress phase: one end-to-end build exercising all four agents and the cross-release law.
-It is the first time `logs/release-audit.jsonl` carries real traffic rather than only being guarded,
-so it is also the first live test of the release law itself.
+`APPROVE LITE-SECURITY-1` closes the security phase. On approval the R-PD-1 cap lifts mechanically
+on the next `check-sync` run, the own-documents-only restriction on pack #1 ends, and the operator
+replaces the plan pair with v3.6.

@@ -4,6 +4,50 @@ A ruling that lives only in a chat window is a load-bearing fact outside the fil
 build treats as a breach. Each entry records what was ruled, what it changed, and **how a reader
 verifies it is still true** — the detector, not a description of one.
 
+## R-PD-1 — packs #2+ deferred behind the security phase (ruled 2026-08-23)
+
+**Ruled.** No second skill-pack lands until the security phase closes at `LITE-SECURITY-1`. Pack #1
+(`confluence-docs`) remains usable in the meantime, restricted to **the operator's own documents** —
+material they authored or already hold — and that restriction lifts when the phase closes.
+
+**Why the ordering was wrong and is being corrected rather than excused.** Pack #1 was gated at
+`PACK-CONFLUENCE-1`, *before* a threat model existed for the surface it opened. The pack is the only
+component in either repository that ingests content the build did not write, and it was approved on
+its constraints (P1a file-only intake, P2a no credentials, P3a proposals only) with no adversarial
+pass behind them. Those constraints turned out to hold — the drill in `docs/security/redteam-1.md`
+shows 6/6 fixtures surfaced and refused — but they held on inspection, not by demonstration, and the
+demonstration came second. One pack gated that way is a recoverable ordering mistake. It becoming
+the pattern is not, which is what this ruling stops.
+
+**Applied.**
+- The cap guard in `scripts/check-sync.sh`, beside the R-SP-1 class guard because both enumerate the
+  same directory: more than one pack on disk while the phase is open is a **FAIL naming the extra
+  packs**.
+- The cap **lifts mechanically**, on an `**APPROVED**` row for `LITE-SECURITY-1` in `GATES.md` —
+  the same needle shape `gate-guard.sh` uses. Nobody has to remember that the restriction expired,
+  and nobody can lift it by asserting that it did.
+- **Fail closed on a missing ledger.** No `GATES.md` reads as *not approved*. The permissive reading
+  would let the cap be lifted by deleting a file, which is the wrong direction for every control in
+  this build.
+
+**What the cap does not do.** It bounds *how many* packs exist, not what pack #1 is pointed at. The
+own-documents-only restriction is an instruction to the operator, not a guard: nothing on disk can
+tell whose document is in `inbox/`, and P1a means the pack processes what it is given. Stated as a
+limit rather than left to look like enforcement.
+
+**Detector.** `scripts/validate-lite.sh` §F asserts all three branches of the guard are present
+(hold, lift, violate) and that the lift keys on the ledger token, using comment-stripped needles.
+
+**Behavioural proof — the gate control, executed and recorded.** A *declared* phantom second pack
+was planted so the cap would fire in isolation: R-SP-1 **passed** (2 packs, both declared) while
+R-PD-1 **failed** naming `zz-phantom`. That separation is the point — the cap binds to the count and
+the ledger, not to whether a pack was declared. The **lift** branch was deliberately unproven at the time of
+writing — demonstrating it meant writing an `**APPROVED**` row for a gate not yet given, which is the
+forgery `gate-guard.sh` exists to make expensive — and it proved itself on the first `check-sync` run
+after approval by **failing**: the needle keyed on `LITE-SECURITY-1` where the ledger writes
+`APPROVE LITE-SECURITY-1`, so the cap could never have lifted. Recorded as F-L4. Corrected, and both
+directions are now demonstrated against the real ledger row.
+
 ## R-SP-1 — skill-packs open UNDER §7.1, class-guarded (ratified 2026-08-23)
 
 **Ruled.** Domain skill-packs are permitted, and they open *under* the sync correlation rather than
