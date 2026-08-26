@@ -437,5 +437,44 @@ else
   [ -z "$noidn" ] && ok "every release line carries a task_id" || no "release lines with no task_id at: $noidn"
 fi
 
+echo
+echo "== F. README bindings (README-SYNC-1) =="
+# The parent's CR-027 lesson, ported after this README carried four suite counts frozen at the L2
+# era for the life of the build: the file a new reader starts from either binds its numbers or
+# loses them. The README now states ONE count — wired hooks — and it is bound here; every other
+# figure was made agnostic, so there is nothing left to rot.
+rhw=$(grep -m1 -oE '^\*\*[0-9]+ wired hooks' README.md)
+rhw=$(printf '%s' "$rhw" | grep -oE '[0-9]+')
+case "$rhw" in ''|*[!0-9]*) rhw="" ;; esac
+lhw=$(jq -r '[.hooks[]?[]?.hooks[]?.command] | length' .claude/settings.json 2>/dev/null)
+case "$lhw" in ''|*[!0-9]*) lhw=0 ;; esac
+if [ -z "$rhw" ]; then
+  no "F1 README states no wired-hook count to bind — the claim was removed, not updated"
+elif [ "$rhw" = "$lhw" ]; then
+  ok "F1 README wired-hook count matches settings ($lhw)"
+else
+  no "F1 README says $rhw wired hooks, settings wire $lhw"
+fi
+# The defect actually found at README-SYNC-1: a reference-style link with no definition renders as
+# literal brackets and points nowhere, and nothing noticed for the life of the build. Strip inline
+# links and code spans, then require every residual [label] to carry a [label]: definition.
+rref=$(sed -E 's/\[[^][]*\]\([^)]*\)//g; s/`[^`]*`//g' README.md | grep -oE '\[[A-Za-z][^][]*\]' | sort -u)
+rmiss=""
+while IFS= read -r rl; do
+  [ -n "$rl" ] || continue
+  rdef=$(grep -cF "$rl:" README.md)
+  case "$rdef" in ''|*[!0-9]*) rdef=0 ;; esac
+  [ "$rdef" -ge 1 ] || rmiss="$rmiss $rl"
+done <<RREOF
+$rref
+RREOF
+if [ -z "$rref" ]; then
+  ok "F2 no reference-style links in README (inline only) — nothing to dangle"
+elif [ -z "$rmiss" ]; then
+  ok "F2 every reference-style link in README has a definition"
+else
+  no "F2 dangling reference(s) in README:$rmiss — they render as literal brackets"
+fi
+
 printf '\n== validate-lite: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1

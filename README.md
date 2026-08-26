@@ -1,11 +1,31 @@
 # psychic-crew-lite
 
-A four-agent IT-automation crew derived from [psychic-crew], plan-driven, with a human gate on every
+A four-agent IT-automation crew derived from [psychic-crew](https://github.com/nathan-hayashi/psychic-crew), plan-driven, with a human gate on every
 phase. Claude Code CLI is the runtime; Zed hosts the terminal.
 
 **Lite means fewer agents and fewer phases. It does not mean fewer controls.** The parent's audit
 priced a Lite variant as "practices without controls" on the assumption the host would not be Claude
 Code. It is, so hooks fire, settings are read, and the enforcement layer travels.
+
+## Quickstart
+
+```bash
+mkdir -p ~/projects && cd ~/projects
+git clone https://github.com/nathan-hayashi/psychic-crew.git        # the parent — side by side matters
+git clone https://github.com/nathan-hayashi/psychic-crew-lite.git
+cd psychic-crew-lite && ./scripts/apply-models.sh && ./scripts/verify.sh
+```
+
+**Requirements:** `git`, `jq`, and a POSIX shell — no Node, no installs, zero runtime dependencies.
+**There is deliberately no setup script:** the hooks create `logs/` on first use and `verify.sh` is
+the entry point. The parent is expected beside this repo so `check-sync.sh` can correlate against
+it; anywhere else, set `PSYCHIC_CREW_PARENT`.
+
+**The harness engages by directory:** run `claude` with this repo as the project folder and
+`.claude/settings.json` wires the guard hooks, the four agents, and the session re-grounding on its
+own. Claude Code auth is per-machine (`claude auth status`); this repo holds no secrets and needs
+none. Work advances only on exact `APPROVE` tokens in `GATES.md` — `scripts/gate-guard.sh` refuses
+a gated commit without one.
 
 ## The roster
 
@@ -55,7 +75,7 @@ Set `PSYCHIC_CREW_PARENT` if the parent repo is not at `$HOME/projects/psychic-c
 
 ## The enforcement layer
 
-Six wired hooks. Three can block a call; the rest observe.
+**7 wired hooks.** Three can block a call; the rest observe.
 
 | Hook | Event | What it refuses |
 | --- | --- | --- |
@@ -63,6 +83,7 @@ Six wired hooks. Three can block a call; the rest observe.
 | `model-guard` | `PreToolUse[Write\|Edit]` | a config making a forbidden model **reachable** — resolved, not pattern-matched |
 | `sensitive-guard` | `PreToolUse[Write\|Edit]` | writes to `.env`/secrets, and removal of protected ignore entries |
 | `release-guard` | `PreToolUse[Write\|Edit\|Bash]` | a release line where `released_by` equals `from_agent` |
+| `pre-compact-checkpoint` | `PreCompact` | nothing — the emergency checkpoint and numbered snapshot before any compaction |
 | `stop` | `Stop` | nothing — snapshots, and announces an L-series gate awaiting its token |
 | `session-start` | `SessionStart` | nothing — re-grounds the session against disk |
 
@@ -84,11 +105,11 @@ Most builds have layer 1 and call it testing.
 
 | Layer | What it answers | Where |
 | --- | --- | --- |
-| **1 · behavioural** | does the thing under test actually do it? | `validate-lite.sh` (24) · `check-sync.sh` (41) |
-| **2 · witness manifest** | is every correction we ever made *still* in force? | `check-witness.sh` (16 attested) |
+| **1 · behavioural** | does the thing under test actually do it? | `validate-lite.sh` · `check-sync.sh` |
+| **2 · witness manifest** | is every correction we ever made *still* in force? | `check-witness.sh` |
 | **3 · temporal history** | **when** did it stop working? | `docs/verification-history.jsonl` |
 
-**Layer 2 exists because a marker is not a control.** The parent's registry holds 26 documented
+**Layer 2 exists because a marker is not a control.** The parent's registry documents its
 fixes each with a detector, and its audit found two of those detectors attesting nothing — one
 matched a comment describing the fix rather than the fix itself. So markers here are searched in
 **comment-stripped code**, and a marker surviving only in a comment is reported as its own kind of
@@ -154,6 +175,9 @@ fixture — mixing fixture and real releases in one file leaves no reader able t
 
 ## Status
 
-**L4 complete — the build is closed.** Scaffold, enforcement, verification, continuity, stress.
-Seven wired hooks, 28 attested corrections, a bisectable history, a distilled state that cannot
-drift from its sources without saying so, and the release law exercised end to end.
+**L4 complete — the build is closed — and hardened since.** Scaffold, enforcement, verification,
+continuity, stress; then the mirrored shell-discipline and gate-order guards, the skill-pack law
+with pack #1 live, and the security phase (`LITE-SECURITY-1`). Current suite counts live in
+`./scripts/verify.sh` output and `docs/verification-history.jsonl` — deliberately not restated
+here, where they rotted from L2 to README-SYNC-1 without anything noticing. The wired-hook count
+above is the one number this file still states, and `validate-lite.sh` binds it.

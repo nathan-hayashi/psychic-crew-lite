@@ -164,3 +164,11 @@
 - **Final:** `verify.sh` exit 0 — layer1 **62/1/0** · sync **60/0** · distill **12/0** · stress **14/0** · layer2 **48/0/0**, no signal.
 - **Restrictions lifted by this token:** pack #1 is no longer own-documents-only; the R-PD-1 cap now permits a second pack.
 - **Next action:** operator places the v3.6 plan/map pair and confirms delta 0.
+
+## [RS1|2026-08-26T01:20:28Z] README-SYNC-1 built — awaiting the token
+- **Task:** quickstart + de-rotted figures + F1/F2 bindings; shared phase with the parent, one token, each ledger its own row.
+- **Workflow status:** verify layer1 64/1/0 (was 62) · sync 60/0 · distill 12/0 · stress 14/0 · layer2 48/0/0, no signal; witness ritual exercised (14 STALE → refresh → 48 OK).
+- **Active artifact:** README.md · scripts/validate-lite.sh · docs/WITNESS-MANIFEST.md, plus this ledger trio (6 entries dirty with them, uncommitted).
+- **Open decisions:** none.
+- **Closed avenues:** restating suite counts in the README (agnostic instead); fixing stop.sh's L-only toast here (recorded, future phase).
+- **Next action:** operator issues `APPROVE README-SYNC-1`; guard-fronted commit and push here and in the parent; post-commit verify expects the same figures green.
