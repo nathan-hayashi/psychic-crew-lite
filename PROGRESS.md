@@ -176,3 +176,9 @@
 ## [RS1|2026-08-26T05:09:45Z] README-SYNC-1 CLOSED at f863479 — post-commit refresh
 - **Post-commit:** verify layer1 64/1/0 · sync 60/0 · distill 12/0 · stress 14/0 · layer2 48/0/0, no signal, clean tree, pushed.
 - **Next action:** none scheduled — the recorded future item is the stop.sh named-gate toast (parent R4-14 twin). The operator opens the next phase.
+
+## [OB1|2026-08-26T06:54:09Z] ONBOARD-1 built — awaiting the token
+- **Task:** plain-language onboarding for this repo; map + summary cascades.
+- **Workflow status:** sync 61/0 · distill 11/1 (CL-01 straddle, resolves at commit) · layer1 64/1/0 · stress 14/0 · layer2 48/0/0.
+- **In-flight changes:** README, docs/GETTING-STARTED.md, docs/SYNC-CORRELATION.md, context/session-summary.md + this ledger trio.
+- **Next action:** operator issues `APPROVE ONBOARD-1`; commit+push here and in the parent.

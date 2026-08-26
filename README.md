@@ -3,6 +3,8 @@
 A four-agent IT-automation crew derived from [psychic-crew](https://github.com/nathan-hayashi/psychic-crew), plan-driven, with a human gate on every
 phase. Claude Code CLI is the runtime; Zed hosts the terminal.
 
+**New here, or not technical?** Start with **[docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)** — the plain-language guide. This README is the full technical reference.
+
 **Lite means fewer agents and fewer phases. It does not mean fewer controls.** The parent's audit
 priced a Lite variant as "practices without controls" on the assumption the host would not be Claude
 Code. It is, so hooks fire, settings are read, and the enforcement layer travels.

@@ -98,6 +98,7 @@ ADDED	—	context/CLAIMS.md
 ADAPTED	stress-project/README.md	stress/DEFECTS.md
 ADDED	—	scripts/stress.sh
 ADDED	—	stress/normalize.sh
+ADDED	—	docs/GETTING-STARTED.md
 DROPPED	hooks/audit-logger.sh	—
 DROPPED	hooks/auto-format.sh	—
 DROPPED	hooks/provenance-flag.sh	—
