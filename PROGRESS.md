@@ -182,3 +182,7 @@
 - **Workflow status:** sync 61/0 · distill 11/1 (CL-01 straddle, resolves at commit) · layer1 64/1/0 · stress 14/0 · layer2 48/0/0.
 - **In-flight changes:** README, docs/GETTING-STARTED.md, docs/SYNC-CORRELATION.md, context/session-summary.md + this ledger trio.
 - **Next action:** operator issues `APPROVE ONBOARD-1`; commit+push here and in the parent.
+
+## [OB1|2026-08-26T06:56:32Z] ONBOARD-1 CLOSED at ab0b809 — post-commit refresh
+- **Post-commit:** verify fully green (distill 12/0, CL-01 resolved), no signal, clean, pushed.
+- **Next action:** none scheduled — operator opens the next phase.
