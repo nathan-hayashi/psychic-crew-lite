@@ -33,8 +33,8 @@ W-01	scripts/apply-models.sh	HITS="$HITS [$a -> $r]"	42cc93b744ad31d9
 W-02	hooks/model-guard.sh	. as $r	76bd7f3eb2f7d5a4
 W-03	scripts/validate-lite.sh	class resolution produced a model for all	7852e86cfc9bf0fc
 W-04	scripts/validate-lite.sh	every tracked hook is wired	7852e86cfc9bf0fc
-W-05	hooks/_common.sh	PHASE="L?"	c6ad08a77c06404e
-W-06	hooks/_common.sh	deny-audit.jsonl	c6ad08a77c06404e
+W-05	hooks/_common.sh	PHASE="L?"	efdeb3b10db1d189
+W-06	hooks/_common.sh	deny-audit.jsonl	efdeb3b10db1d189
 W-07	hooks/release-guard.sh	released_by equals from_agent	5055ab487fe2b652
 W-08	scripts/check-sync.sh	severity vocabulary byte-identical	2daa4b1b57202ca4
 W-09	scripts/check-sync.sh	ADDED row names a parent path	2daa4b1b57202ca4

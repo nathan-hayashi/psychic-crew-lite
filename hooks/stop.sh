@@ -22,7 +22,9 @@ ST="$ROOT/.claude/state"; CK="$ST/checkpoints"
 # GATES.md is the authority, not PROGRESS.md prose: the ledger is what a token is actually recorded
 # against, so a stale checkpoint sentence cannot manufacture a GATE READY alert.
 MSG="turn complete"
-PEND=$(grep -oE 'awaiting `APPROVE (GATE-L[0-9]+)`' "$ROOT/GATES.md" 2>/dev/null | grep -oE 'GATE-L[0-9]+' | head -1 || true)
+# HARNESS-ROT-1: widened from GATE-L[0-9]+ to any token — the narrow form meant a NAMED Lite gate
+# awaited with no toast (recorded at README-SYNC-1 as this repo's R4-14 twin; closed here).
+PEND=$(grep -oE 'awaiting `APPROVE [A-Za-z0-9-]+`' "$ROOT/GATES.md" 2>/dev/null | sed -E 's/^awaiting `APPROVE ([A-Za-z0-9-]+)`$/\1/' | head -1 || true)
 [ -n "${PEND:-}" ] && MSG="GATE READY — $PEND awaiting your token"
-command -v wsl-notify-send.exe >/dev/null 2>&1 && wsl-notify-send.exe "psychic-crew-lite" "$MSG" >/dev/null 2>&1 || true
+toast "$MSG"
 exit 0

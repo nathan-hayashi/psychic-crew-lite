@@ -186,3 +186,8 @@
 ## [OB1|2026-08-26T06:56:32Z] ONBOARD-1 CLOSED at ab0b809 — post-commit refresh
 - **Post-commit:** verify fully green (distill 12/0, CL-01 resolved), no signal, clean, pushed.
 - **Next action:** none scheduled — operator opens the next phase.
+
+## [SYNC|2026-08-31T16:06:07Z] HARNESS-ROT-1 (parent-gated, token APPROVE HARNESS-ROT-1 in the parent ledger)
+- shell-discipline.md mirror restored byte-identical (rule 8 arrives; sync 60/1→61/0, SIGNAL PASS again).
+- toast() single dispatch table in _common.sh (three-way OS dispatch); stop.sh routes through it and its gate toast now matches ANY awaiting token, closing the README-SYNC-1 recorded gap (named gates never toasted).
+- scrub() bounds the whole payload (head -c 400, was per-line cut). Witness verified-then-refreshed: W-05/W-06 only. Tuple: 64/1/0 · 61/0 · 12/0 · 14/0 · 48/0/0 · PASS.

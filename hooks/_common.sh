@@ -21,6 +21,8 @@ now () { date -u +%Y-%m-%dT%H:%M:%SZ; }
 # mentions, so a rule file discussing these words stays readable while an actual value does not.
 # Fails CLOSED: if the scrubber cannot run, emit a sentinel, because a lost audit target is
 # recoverable and a leaked key is not.
+# HARNESS-ROT-1: the truncation is now `head -c 400` — a bound on the WHOLE payload; the prior
+# `cut -c1-200` was line-oriented, so a multi-line denied command logged essentially in full.
 SCRUB_KEY='[A-Za-z0-9_.-]*(password|passwd|secret|token|api[_-]?key|access[_-]?key|secret[_-]?key|private[_-]?key|credentials?|client[_-]?secret|auth[_-]?token|authorization)[A-Za-z0-9_.-]*'
 SCRUB_SEP="[\"']?[[:space:]]*[=:][[:space:]]*"
 scrub () {
@@ -36,8 +38,23 @@ scrub () {
     -e "s#($SCRUB_KEY$SCRUB_SEP)'[^']*'#\1'[REDACTED]'#gI" \
     -e "s#($SCRUB_KEY$SCRUB_SEP)[^[:space:]\"';|&\`]+#\1[REDACTED]#gI" \
     -e "s#(--?(password|passwd|token|api[_-]?key|secret|access[_-]?key|client[_-]?secret|auth[_-]?token)[[:space:]]+)[^[:space:]]+#\1[REDACTED]#gI" \
-    2>/dev/null | cut -c1-200)
+    2>/dev/null | head -c 400)
   if [ -z "$_sc_out" ]; then printf '%s' '[REDACTED-SCRUB-UNAVAILABLE]'; else printf '%s' "$_sc_out"; fi
+}
+# HARNESS-ROT-1: ONE notification dispatch table, every caller routes here (stop.sh, and in the
+# parent notify.sh). The report's row-2 rot was stop.sh carrying half a private WSL-only copy of
+# this table, so the toast died silently on macOS. A second copy of a dispatch table drifts.
+toast () {
+  _to_msg=${1:-}
+  [ -n "$_to_msg" ] || return 0
+  if grep -qi microsoft /proc/version 2>/dev/null && command -v wsl-notify-send.exe >/dev/null 2>&1; then
+    wsl-notify-send.exe "psychic-crew-lite" "$_to_msg" >/dev/null 2>&1 || true
+  elif command -v notify-send >/dev/null 2>&1; then
+    notify-send "psychic-crew-lite" "$_to_msg" >/dev/null 2>&1 || true
+  elif command -v osascript >/dev/null 2>&1; then
+    osascript -e "display notification \"$_to_msg\" with title \"psychic-crew-lite\"" >/dev/null 2>&1 || true
+  fi
+  return 0
 }
 
 # A PreToolUse denial is JSON on stdout; a bare exit 2 does NOT block. Emit both.
