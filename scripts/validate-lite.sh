@@ -9,6 +9,8 @@
 # records into the live trail it audits, and the redaction had to be logged to stay distinguishable
 # from tampering. No case here touches this repo's own logs/.
 set -uo pipefail
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+             elif command -v shasum >/dev/null 2>&1; then shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 cd "$(dirname "$0")/.."
 P=0; F=0; S=0
 ok () { P=$((P+1)); printf '  [PASS] %s\n' "$1"; }
@@ -497,6 +499,24 @@ case "$rpn" in ''|*[!0-9]*) rpn=0 ;; esac
   && ok "R-PR-1 two-root: a session-root marker cannot loosen the live blocker; record lands at the session root" \
   || no "R-PR-1 two-root broken — rc=$rpr (want 2) records=$rpn (want >=1)"
 rm -rf "$rpc"
+
+# HARNESS-BUILD-1 — the ADAPTED deploy twin: fresh deploy lands the trio, --remove restores
+# byte-equal, and the parent harness is refused as a target.
+hdt=$(mktemp -d)
+( cd "$hdt" && git init -q . && git config user.email t@t && git config user.name t \
+  && printf 'x\n' > a.txt && git add -A && git commit -qm i ) >/dev/null 2>&1
+hdls=$(mktemp); ls "$hdt" > "$hdls"; hda0=$(_sha256 "$hdls")
+hdh=$(mktemp -d); mkdir -p "$hdh/scripts" "$hdh/logs"; cp scripts/deploy-harness.sh "$hdh/scripts/"
+"$hdh/scripts/deploy-harness.sh" "$hdt" --apply >/dev/null 2>&1; hd1=$?
+( cd "$hdt" && git add -A && git commit -qm d ) >/dev/null 2>&1
+"$hdh/scripts/deploy-harness.sh" "$hdt" --remove >/dev/null 2>&1; hd2=$?
+ls "$hdt" > "$hdls"; hda1=$(_sha256 "$hdls"); rm -f "$hdls"
+./scripts/deploy-harness.sh ../psychic-crew --apply >/dev/null 2>&1; hd3=$?
+{ [ "$hd1" = 0 ] && [ "$hd2" = 0 ] && [ "$hda0" = "$hda1" ] && [ "$hd3" = 3 ] \
+    && [ ! -d "$hdt/.claude/harness-hooks" ]; } \
+  && ok "deploy twin: fresh deploy + byte-restoring remove + parent-refusal (rc $hd1/$hd2/$hd3)" \
+  || no "deploy twin broken — apply:$hd1 remove:$hd2 top-level:[$hda0/$hda1] parent-refusal:$hd3"
+rm -rf "$hdt" "$hdh"
 
 printf '\n== validate-lite: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1
