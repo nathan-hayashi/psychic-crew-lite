@@ -28,7 +28,7 @@ ok "all shell files parse"
 # check polices scripts/ and context/ and has NEVER policed hooks/, so two hooks added at S2 drifted
 # for four days in the directory holding its entire enforcement layer. Bound in both directions
 # here, from the start. _common.sh is excluded BY NAME because it is sourced, never wired.
-tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -v '^_common\.sh$' | sort -u)
+tracked=$(git ls-files 'hooks/*.sh' 2>/dev/null | sed 's|hooks/||' | grep -vE '^(_common|_profile)\.sh$' | sort -u)
 wired=$(jq -r '.hooks | to_entries[] | .value[] | .hooks[] | .command' .claude/settings.json 2>/dev/null \
         | sed 's|.*/||' | sort -u)
 ntr=$(printf '%s\n' "$tracked" | grep -c . || true)

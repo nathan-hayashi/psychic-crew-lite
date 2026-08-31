@@ -8,7 +8,7 @@ checked by `./scripts/distill.sh check`.
 
 **verified** — psychic-crew-lite: a four-agent IT-automation crew derived from psychic-crew, with a
 human gate on every phase. Claude Code is the runtime, so hooks fire and the enforcement layer
-travels. **58** tracked files.
+travels. **59** tracked files.
 
 **verified** — There is no arbiter. Neither producer releases its own output: `verifier` releases
 `security`'s findings and `security` releases `verifier`'s, with `released_by` required to differ
