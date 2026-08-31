@@ -31,22 +31,22 @@ exercises this block, so it is data rather than decoration.
 # WITNESS-MANIFEST v1
 W-01	scripts/apply-models.sh	HITS="$HITS [$a -> $r]"	42cc93b744ad31d9
 W-02	hooks/model-guard.sh	. as $r	76bd7f3eb2f7d5a4
-W-03	scripts/validate-lite.sh	class resolution produced a model for all	7852e86cfc9bf0fc
-W-04	scripts/validate-lite.sh	every tracked hook is wired	7852e86cfc9bf0fc
+W-03	scripts/validate-lite.sh	class resolution produced a model for all	b39245ea0468851a
+W-04	scripts/validate-lite.sh	every tracked hook is wired	b39245ea0468851a
 W-05	hooks/_common.sh	PHASE="L?"	efdeb3b10db1d189
 W-06	hooks/_common.sh	deny-audit.jsonl	efdeb3b10db1d189
 W-07	hooks/release-guard.sh	released_by equals from_agent	5055ab487fe2b652
 W-08	scripts/check-sync.sh	severity vocabulary byte-identical	2daa4b1b57202ca4
 W-09	scripts/check-sync.sh	ADDED row names a parent path	2daa4b1b57202ca4
 W-10	scripts/check-sync.sh	every comparison below would be vacuous	2daa4b1b57202ca4
-W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	1f035a0ac95a0bd4
+W-11	hooks/bash-blocker.sh	LC-7: this build is Claude-only	9cd9d1812501ce8a
 W-12	hooks/sensitive-guard.sh	writes to .env/secrets are blocked	feaac63888e103f3
-W-13	scripts/validate-lite.sh	denial records carry an L-series phase	7852e86cfc9bf0fc
+W-13	scripts/validate-lite.sh	denial records carry an L-series phase	b39245ea0468851a
 W-14	scripts/check-sync.sh	UNDECLARED Lite file(s)	2daa4b1b57202ca4
 W-15	scripts/verify.sh	rolling-median	421f435cab54036d
 W-16	scripts/check-witness.sh	marker survives ONLY in a comment	96c421ed057ad9ab
 W-17	scripts/verify.sh	history did NOT record	421f435cab54036d
-W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	7852e86cfc9bf0fc
+W-18	scripts/validate-lite.sh	carried the prior next action forward verbatim	b39245ea0468851a
 W-19	scripts/continuity.sh	write divergence, not a stall	8ecd476d650e4522
 W-20	scripts/continuity.sh	-path ./logs -prune	8ecd476d650e4522
 W-21	scripts/continuity.sh	may not run its own stall check	8ecd476d650e4522
@@ -55,27 +55,27 @@ W-23	scripts/distill.sh	unknown extractor	f9ad473efb964acc
 W-24	scripts/stress.sh	BLINDNESS BREACH	da3116dd268e0a84
 W-25	scripts/stress.sh	the live trail is never touched	da3116dd268e0a84
 W-26	scripts/stress.sh	a self-release was REFUSED by the shipped guard	da3116dd268e0a84
-W-27	scripts/validate-lite.sh	release trail is absent or empty	7852e86cfc9bf0fc
+W-27	scripts/validate-lite.sh	release trail is absent or empty	b39245ea0468851a
 W-28	scripts/stress.sh	the union is what a single pass would have missed	da3116dd268e0a84
 W-29	scripts/continuity.sh	refusing to record: not a git work tree	8ecd476d650e4522
 W-30	scripts/continuity.sh	durable record did NOT land	8ecd476d650e4522
 W-31	scripts/continuity.sh	[durable: survives a clone]	8ecd476d650e4522
 W-32	scripts/continuity.sh	does not travel to a fresh clone	8ecd476d650e4522
 W-33	scripts/continuity.sh	sh_count ()	8ecd476d650e4522
-W-34	scripts/validate-lite.sh	R-SD-1 VIOLATION	7852e86cfc9bf0fc
-W-35	scripts/validate-lite.sh	the mirrored rule this assertion enforces is present	7852e86cfc9bf0fc
-W-36	scripts/validate-lite.sh	rule 5 VIOLATION	7852e86cfc9bf0fc
-W-37	scripts/validate-lite.sh	_sdstrip=	7852e86cfc9bf0fc
+W-34	scripts/validate-lite.sh	R-SD-1 VIOLATION	b39245ea0468851a
+W-35	scripts/validate-lite.sh	the mirrored rule this assertion enforces is present	b39245ea0468851a
+W-36	scripts/validate-lite.sh	rule 5 VIOLATION	b39245ea0468851a
+W-37	scripts/validate-lite.sh	_sdstrip=	b39245ea0468851a
 W-38	hooks/release-guard.sh	self_hits=$(	5055ab487fe2b652
 W-39	scripts/check-sync.sh	UNDECLARED pack(s) on disk	2daa4b1b57202ca4
 W-40	scripts/check-sync.sh	a pack is Lite-only by definition	2daa4b1b57202ca4
 W-41	scripts/check-sync.sh	no 'why' is recorded	2daa4b1b57202ca4
-W-42	scripts/validate-lite.sh	A4a is recorded	7852e86cfc9bf0fc
+W-42	scripts/validate-lite.sh	A4a is recorded	b39245ea0468851a
 W-43	scripts/gate-guard.sh	has no APPROVED row in	0afad32c9e7b1b2a
-W-44	scripts/validate-lite.sh	refusal branch reads the ledger	7852e86cfc9bf0fc
-W-45	scripts/validate-lite.sh	PUBLICATION RISK — pack workspace NOT ignored	7852e86cfc9bf0fc
-W-46	scripts/validate-lite.sh	force-add would be caught here	7852e86cfc9bf0fc
-W-47	scripts/validate-lite.sh	no second scale	7852e86cfc9bf0fc
+W-44	scripts/validate-lite.sh	refusal branch reads the ledger	b39245ea0468851a
+W-45	scripts/validate-lite.sh	PUBLICATION RISK — pack workspace NOT ignored	b39245ea0468851a
+W-46	scripts/validate-lite.sh	force-add would be caught here	b39245ea0468851a
+W-47	scripts/validate-lite.sh	no second scale	b39245ea0468851a
 W-48	scripts/check-sync.sh	packdirs=	2daa4b1b57202ca4
 ```
 

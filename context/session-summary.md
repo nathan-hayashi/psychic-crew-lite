@@ -36,7 +36,7 @@ bisected rather than argued. Regression is judged against a rolling median, not 
 
 ## Correlation with the parent
 
-**verified** — `docs/SYNC-CORRELATION.md` holds **56** sync map rows under five relations:
+**verified** — `docs/SYNC-CORRELATION.md` holds **57** sync map rows under five relations:
 MIRRORED, ADAPTED, DROPPED, ADDED and PACK. `security.md` is ADAPTED because byte-identity shipped
 references to an arbiter this build does not have, while its severity table stays pinned
 byte-identical — two builds that disagree about `crit` cannot exchange findings.

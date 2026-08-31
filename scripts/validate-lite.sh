@@ -476,5 +476,27 @@ else
   no "F2 dangling reference(s) in README:$rmiss — they render as literal brackets"
 fi
 
+# HARNESS-CONV-1 / R-PR-1 — same two detectors as the parent, against this repo's own bytes.
+rpa=$(mktemp -d); mkdir -p "$rpa/hooks" "$rpa/logs"
+cp hooks/bash-blocker.sh hooks/_common.sh "$rpa/hooks/"
+printf '%s' "$(jq -cn --arg c "sudo rm x" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+  | CLAUDE_PROJECT_DIR="$rpa" "$rpa/hooks/bash-blocker.sh" >/dev/null 2>&1; rpu=$?
+printf '%s' "$(jq -cn --arg c "git clone https://x/y" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+  | CLAUDE_PROJECT_DIR="$rpa" "$rpa/hooks/bash-blocker.sh" >/dev/null 2>&1; rpb=$?
+{ [ "$rpu" = 2 ] && [ "$rpb" = 2 ]; } \
+  && ok "R-PR-1 universal precedes profile AND missing resolver fails closed (rc $rpu/$rpb)" \
+  || no "R-PR-1 order/fail-direction broken — universal rc=$rpu build rc=$rpb (want 2/2, no resolver)"
+rm -rf "$rpa"
+rpc=$(mktemp -d); mkdir -p "$rpc/.claude" "$rpc/logs"
+printf '{"profile":"node-app"}' > "$rpc/.claude/harness-profile.json"
+printf '%s' "$(jq -cn --arg c "git clone https://x/y" '{tool_name:"Bash",tool_input:{command:$c}}')" \
+  | CLAUDE_PROJECT_DIR="$rpc" ./hooks/bash-blocker.sh >/dev/null 2>&1; rpr=$?
+rpn=$(grep -c . "$rpc/logs/deny-audit.jsonl" 2>/dev/null || true)
+case "$rpn" in ''|*[!0-9]*) rpn=0 ;; esac
+{ [ "$rpr" = 2 ] && [ "$rpn" -ge 1 ]; } \
+  && ok "R-PR-1 two-root: a session-root marker cannot loosen the live blocker; record lands at the session root" \
+  || no "R-PR-1 two-root broken — rc=$rpr (want 2) records=$rpn (want >=1)"
+rm -rf "$rpc"
+
 printf '\n== validate-lite: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1
