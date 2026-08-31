@@ -70,6 +70,7 @@ DROPPED	.claude/agents/integration-runner.md	—
 DROPPED	.claude/rules/arbiter-protocol.md	—
 ADAPTED	hooks/_common.sh	hooks/_common.sh
 MIRRORED	hooks/_profile.sh	hooks/_profile.sh
+ADDED	—	LICENSE
 ADAPTED	scripts/deploy-harness.sh	scripts/deploy-harness.sh
 ADAPTED	hooks/bash-blocker.sh	hooks/bash-blocker.sh
 ADAPTED	hooks/model-guard.sh	hooks/model-guard.sh
