@@ -8,7 +8,7 @@ checked by `./scripts/distill.sh check`.
 
 **verified** — psychic-crew-lite: a four-agent IT-automation crew derived from psychic-crew, with a
 human gate on every phase. Claude Code is the runtime, so hooks fire and the enforcement layer
-travels. **61** tracked files.
+travels. **62** tracked files.
 
 **verified** — There is no arbiter. Neither producer releases its own output: `verifier` releases
 `security`'s findings and `security` releases `verifier`'s, with `released_by` required to differ
@@ -36,7 +36,7 @@ bisected rather than argued. Regression is judged against a rolling median, not 
 
 ## Correlation with the parent
 
-**verified** — `docs/SYNC-CORRELATION.md` holds **59** sync map rows under five relations:
+**verified** — `docs/SYNC-CORRELATION.md` holds **60** sync map rows under five relations:
 MIRRORED, ADAPTED, DROPPED, ADDED and PACK. `security.md` is ADAPTED because byte-identity shipped
 references to an arbiter this build does not have, while its severity table stays pinned
 byte-identical — two builds that disagree about `crit` cannot exchange findings.

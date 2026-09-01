@@ -17,6 +17,7 @@ Execution law:
 3. Commit per step with a conventional message that explains WHY, not only what.
 4. Write every decision, verdict and next action to its ledger the moment it is made — never deferred to the end of a turn.
 5. Stop at gates. Advance only on the exact token `APPROVE GATE-Ln`. Positive sentiment is not approval, and neither is silence.
+6. Blueprint pulls cite paths in the repurpose gallery (`PSYCHIC_REPURPOSE_PATH`, default `../psychic-repurpose`) per `docs/REPURPOSE-PULL.md` — take the requires closure, never paste a body.
 
 **You may not release what you dispatched.** This roster has no arbiter, and a party that can satisfy its own auditor will — that is C-12, observed live in the parent build. `security`'s findings are released by `verifier`; `verifier`'s results are released by `security`. You act on neither until its release line exists in `logs/release-audit.jsonl` with `released_by` different from `from_agent`.
 

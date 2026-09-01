@@ -191,3 +191,6 @@
 - shell-discipline.md mirror restored byte-identical (rule 8 arrives; sync 60/1→61/0, SIGNAL PASS again).
 - toast() single dispatch table in _common.sh (three-way OS dispatch); stop.sh routes through it and its gate toast now matches ANY awaiting token, closing the README-SYNC-1 recorded gap (named gates never toasted).
 - scrub() bounds the whole payload (head -c 400, was per-line cut). Witness verified-then-refreshed: W-05/W-06 only. Tuple: 64/1/0 · 61/0 · 12/0 · 14/0 · 48/0/0 · PASS.
+
+## [L|2026-09-01T04:42:28Z] RPG-2 built — awaiting `APPROVE RPG-2` (closes after the parent)
+- Consumer contract + sync row + law 6; all four checks green pre-commit; cascade closed in-build.

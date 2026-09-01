@@ -110,6 +110,7 @@ DROPPED	hooks/error-recovery.sh	—
 DROPPED	hooks/reference-cap.sh	—
 DROPPED	hooks/subagent-start.sh	—
 DROPPED	hooks/pre-compact-checkpoint.sh	—
+ADDED	—	docs/REPURPOSE-PULL.md
 ```
 
 ## Why each PACK row is a refusal on the parent side, not an oversight
