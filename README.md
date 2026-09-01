@@ -9,10 +9,19 @@ phase. Claude Code CLI is the runtime; Zed hosts the terminal.
 priced a Lite variant as "practices without controls" on the assumption the host would not be Claude
 Code. It is, so hooks fire, settings are read, and the enforcement layer travels.
 
+## Topology
+
+```mermaid
+graph LR
+  P["psychic-crew (parent)"] -->|"SYNC-MAP: MIRRORED / ADAPTED / DROPPED"| LT["psychic-crew-lite"]
+  LT -->|"ADDED / PACK rows — declared, never silent"| LT
+  CS["check-sync.sh"] -->|enforces| SM["docs/SYNC-CORRELATION.md"]
+  WM["check-witness.sh"] -->|"guards untracked working state"| LT
+```
+
 ## Quickstart
 
 ```bash
-mkdir -p ~/projects && cd ~/projects
 git clone https://github.com/nathan-hayashi/psychic-crew.git        # the parent — side by side matters
 git clone https://github.com/nathan-hayashi/psychic-crew-lite.git
 cd psychic-crew-lite && ./scripts/apply-models.sh && ./scripts/verify.sh

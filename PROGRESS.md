@@ -194,3 +194,6 @@
 
 ## [L|2026-09-01T04:42:28Z] RPG-2 built — awaiting `APPROVE RPG-2` (closes after the parent)
 - Consumer contract + sync row + law 6; all four checks green pre-commit; cascade closed in-build.
+
+## [L|2026-09-01T05:15:35Z] S5-README-UX built — awaiting `APPROVE S5-README-UX` (closes fifth)
+- Topology diagram + de-localized quickstart; badge/honesty declined-disclosed; all green.
