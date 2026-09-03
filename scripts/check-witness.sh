@@ -18,6 +18,12 @@
 # is unproven rather than broken. Clearing it requires `--refresh`, which re-stamps hashes and prints
 # what moved — the point is that a human ran it knowingly.
 set -uo pipefail
+# LITE-PARITY-1: portable hashing — sha256sum is GNU-only; on macOS both sides of a compare
+# come back empty and "" = "" is a SILENT FALSE PASS (the parent's rule-7 lesson). An EMPTY
+# hash is a failure, never a match.
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+             else shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; fi; }
+
 cd "$(dirname "$0")/.."
 MODE="${1:-check}"
 MAN="docs/WITNESS-MANIFEST.md"
@@ -63,7 +69,7 @@ EOF
   tmp=$(mktemp)
   while IFS="$(printf '\t')" read -r id file marker hash; do
     [ -n "${id:-}" ] || continue
-    new=$(sha256sum "$file" 2>/dev/null | cut -c1-16)
+    new=$(_sha256 "$file" 2>/dev/null | cut -c1-16)
     if [ "$new" != "$hash" ]; then printf '  %s  %s  %s -> %s\n' "$id" "$file" "$hash" "$new"; fi
     printf '%s\t%s\t%s\t%s\n' "$id" "$file" "$marker" "$new" >> "$tmp"
   done <<EOF
@@ -92,7 +98,7 @@ while IFS="$(printf '\t')" read -r id file marker hash; do
     fi
     continue
   fi
-  now=$(sha256sum "$file" 2>/dev/null | cut -c1-16)
+  now=$(_sha256 "$file" 2>/dev/null | cut -c1-16)
   if [ "$now" != "$hash" ]; then
     stal "$id: $file changed since attestation ($hash -> $now) — re-verify, then --refresh"
   else

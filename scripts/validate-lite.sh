@@ -142,6 +142,42 @@ sd5bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sd5f; do
   && ok "R-SD-1 the mirrored rule this assertion enforces is present" \
   || no "R-SD-1 assertion runs but .claude/rules/shell-discipline.md is absent"
 
+# R-SD-1 rule 2 — ported from the parent at LITE-PARITY-1, with THIS repo's corrected stripper
+# (the parent's naive form is upgraded to match in the same gate — parity means the better form
+# both sides). Scope honestly stated as the parent states it: the line scanner catches the
+# inline offender; the two-step form across lines gains a needle when evidence produces one.
+_w1="w""c -l"; _w2=')" ='; _w3=')" !='
+sd2bad=$(git ls-files '*.sh' 2>/dev/null | while read -r sdf; do
+           sed -E "$_sdstrip" "$sdf" | grep -nF -- "$_w1" | grep -F -e "$_w2" -e "$_w3" | sed "s|^|$sdf:|"
+         done)
+sd2probe='[ "$(git status | '"$_w1"$_w2' 0 ]'
+{ grep -qF -- "$_w1" <<<"$sd2probe" && grep -qF -- "$_w2" <<<"$sd2probe"; } \
+  && ok "R-SD-1 rule 2 scanner fires on a planted inline wc-to-string offender" \
+  || no "R-SD-1 rule 2 scanner is void — did not match a planted offender"
+[ -z "$sd2bad" ] \
+  && ok "R-SD-1 rule 2: no wc -l count reaches an inline string test (census 0 at port)" \
+  || no "R-SD-1 rule 2 VIOLATION — wc -l into string compare at: $(printf '%s' "$sd2bad" | tr '\n' ' ')"
+
+# R-SD-1 rule 7 — the GNU-ism scanner, ported at LITE-PARITY-1. The pre-sweep found THREE real
+# (b)-class offenders here (direct sha256sum in check-sync + check-witness — the macOS silent-
+# false-pass class) and swept them through the _sha256 helper in the same gate, census 3 -> 0.
+_pb="sha256""sum"; _pc="past""e -sd"; _pi="se""d -i "
+pabad=$(git ls-files '*.sh' 2>/dev/null | while read -r pf; do
+          sc=$(sed -E "$_sdstrip" "$pf")
+          printf '%s\n' "$sc" | grep -nE "${_pi}['\"]"       | sed "s|^|$pf:(a) |"
+          printf '%s\n' "$sc" | grep -nF -- "$_pb" | grep -vF '_sha256 ()' | sed "s|^|$pf:(b) |"
+          printf '%s\n' "$sc" | grep -nF -- "$_pc" | grep -vF -- '-sd+ -'  | sed "s|^|$pf:(c) |"
+        done)
+{ grep -qE "${_pi}['\"]" <<<"${_pi}'x'" \
+    && grep -qF -- "$_pb" <<<"${_pb} f" \
+    && grep -qF -- "$_pc" <<<"${_pc}+ | bc"; } \
+  && ok "R-SD-1 rule 7 scanner fires on planted sed-i / sha256 / paste offenders" \
+  || no "R-SD-1 rule 7 scanner is void — a planted GNU-ism went unmatched"
+[ -z "$pabad" ] \
+  && ok "R-SD-1 rule 7: no unguarded GNU-ism in tracked shell (pre-sweep census 3 -> 0)" \
+  || no "R-SD-1 rule 7 VIOLATION — GNU-ism at: $(printf '%s' "$pabad" | tr '\n' ' ')"
+
+
 for e in ".env" "logs/" ".claude/state/"; do
   grep -qxF "$e" .gitignore && ok "ignore rule present: $e" || no "ignore rule missing: $e"
 done

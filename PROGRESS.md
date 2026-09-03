@@ -197,3 +197,6 @@
 
 ## [L|2026-09-01T05:15:35Z] S5-README-UX built — awaiting `APPROVE S5-README-UX` (closes fifth)
 - Topology diagram + de-localized quickstart; badge/honesty declined-disclosed; all green.
+
+## [L|2026-09-03T00:42:57Z] LITE-PARITY-1 built — awaiting `APPROVE LITE-PARITY-1` (closes first, then parent)
+- Scanners ported (corrected stripper both sides); pre-sweep swept 3 real sha256sum sites; 71/1/0.

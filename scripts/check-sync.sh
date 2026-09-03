@@ -8,6 +8,12 @@
 # Parent located via $PSYCHIC_CREW_PARENT, defaulting under $HOME. No absolute machine path appears
 # here — two red gates in the parent came from writing one into a tracked file.
 set -uo pipefail
+# LITE-PARITY-1: portable hashing — sha256sum is GNU-only; on macOS both sides of a compare
+# come back empty and "" = "" is a SILENT FALSE PASS (the parent's rule-7 lesson). An EMPTY
+# hash is a failure, never a match.
+_sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+             else shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; fi; }
+
 cd "$(dirname "$0")/.."
 PARENT="${PSYCHIC_CREW_PARENT:-$HOME/projects/psychic-crew}"
 MAP="docs/SYNC-CORRELATION.md"
@@ -70,7 +76,7 @@ while IFS="$(printf '\t')" read -r rel ppath lpath; do
     MIRRORED)
       if [ ! -e "$lpath" ]; then
         fail "MIRRORED: lite path missing — $lpath"
-      elif [ "$(sha256sum "$PARENT/$ppath" | cut -d' ' -f1)" = "$(sha256sum "$lpath" | cut -d' ' -f1)" ]; then
+      elif ph=$(_sha256 "$PARENT/$ppath") && lh=$(_sha256 "$lpath") && [ -n "$ph" ] && [ "$ph" = "$lh" ]; then
         pass "MIRRORED byte-identical — $lpath"
       else
         fail "MIRRORED DIVERGED — $lpath differs from parent $ppath"
