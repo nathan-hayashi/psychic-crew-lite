@@ -554,5 +554,24 @@ ls "$hdt" > "$hdls"; hda1=$(_sha256 "$hdls"); rm -f "$hdls"
   || no "deploy twin broken — apply:$hd1 remove:$hd2 top-level:[$hda0/$hda1] parent-refusal:$hd3"
 rm -rf "$hdt" "$hdh"
 
+
+echo "== SUITE-ATTEST-1 (lite leg) — the layer-3 timeline query =="
+wt_out=$(bash scripts/check-witness.sh --timeline 2>&1)
+wt_n=$(printf '%s\n' "$wt_out" | grep -c '^20'); case "$wt_n" in ''|*[!0-9]*) wt_n=0 ;; esac
+[ "$wt_n" -ge 3 ] && ok "timeline reads the tracked history ($wt_n entries printed)" \
+  || no "timeline vacuous or broken ($wt_n entries)"
+wt_tmp=$(mktemp -d)
+mkdir -p "$wt_tmp/docs" "$wt_tmp/scripts"
+cp scripts/check-witness.sh "$wt_tmp/scripts/"
+printf '%s\n%s\n' \
+  '{"ts":"2026-01-01T00:00:00Z","commit":"aaaaaaa","dirty":0,"layer1":{"pass":24,"skip":1,"fail":0},"sync":{"pass":41,"fail":0},"layer2":{"ok":17,"stale":0,"fail":0}}' \
+  '{"ts":"2026-01-02T00:00:00Z","commit":"bbbbbbb","dirty":0,"layer1":{"pass":20,"skip":1,"fail":4},"sync":{"pass":41,"fail":0},"layer2":{"ok":17,"stale":0,"fail":0}}' \
+  > "$wt_tmp/docs/verification-history.jsonl"
+wt_fix=$( ( cd "$wt_tmp" && bash scripts/check-witness.sh --timeline 2>&1 ) | grep -c 'REGRESSION-CANDIDATE' )
+case "$wt_fix" in ''|*[!0-9]*) wt_fix=0 ;; esac
+[ "$wt_fix" -ge 1 ] && ok "control fires: a planted count-drop is flagged with its bisect window" \
+  || no "timeline regression control DID NOT fire"
+rm -rf "$wt_tmp"
+
 printf '\n== validate-lite: %s PASS / %s SKIP / %s FAIL ==\n' "$P" "$S" "$F"
 [ "$F" = 0 ] || exit 1

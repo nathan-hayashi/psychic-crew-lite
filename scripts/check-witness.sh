@@ -26,6 +26,41 @@ _sha256 () { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut 
 
 cd "$(dirname "$0")/.."
 MODE="${1:-check}"
+
+if [ "$MODE" = "--timeline" ]; then
+  # SUITE-ATTEST-1 (lite leg): the layer-3 query the twin always implied. Pure read; a
+  # regression-candidate is any entry where a pass/ok count DROPS or a fail/stale count RISES
+  # vs the previous entry - the bisect window is (prev.commit, curr.commit].
+  HIST="docs/verification-history.jsonl"
+  [ -f "$HIST" ] || { echo "timeline: no history at $HIST"; exit 1; }
+  prev=""
+  tl_flagged=0
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    cur=$(printf '%s' "$line" | jq -r '[.ts, .commit, (.dirty|tostring), (.layer1.pass|tostring), (.layer1.fail|tostring), (.sync.pass|tostring), (.sync.fail|tostring), (.layer2.ok|tostring), (.layer2.stale|tostring), (.layer2.fail|tostring)] | @tsv' 2>/dev/null)
+    [ -n "$cur" ] || { echo "timeline: unparseable entry skipped"; continue; }
+    IFS="$(printf '\t')" read -r c_ts c_commit c_dirty c_l1p c_l1f c_syp c_syf c_l2o c_l2s c_l2f <<<"$cur"
+    printf '%s  %s  dirty=%s  layer1=%s/%s  sync=%s/%s  layer2=%s/%s/%s\n' \
+      "$c_ts" "$c_commit" "$c_dirty" "$c_l1p" "$c_l1f" "$c_syp" "$c_syf" "$c_l2o" "$c_l2s" "$c_l2f"
+    if [ -n "$prev" ]; then
+      IFS="$(printf '\t')" read -r p_ts p_commit p_dirty p_l1p p_l1f p_syp p_syf p_l2o p_l2s p_l2f <<<"$prev"
+      tl_bad=""
+      [ "$c_l1p" -lt "$p_l1p" ] 2>/dev/null && tl_bad="$tl_bad layer1.pass:$p_l1p->$c_l1p"
+      [ "$c_syp" -lt "$p_syp" ] 2>/dev/null && tl_bad="$tl_bad sync.pass:$p_syp->$c_syp"
+      [ "$c_l2o" -lt "$p_l2o" ] 2>/dev/null && tl_bad="$tl_bad layer2.ok:$p_l2o->$c_l2o"
+      [ "$c_l1f" -gt "$p_l1f" ] 2>/dev/null && tl_bad="$tl_bad layer1.fail:$p_l1f->$c_l1f"
+      [ "$c_syf" -gt "$p_syf" ] 2>/dev/null && tl_bad="$tl_bad sync.fail:$p_syf->$c_syf"
+      [ "$c_l2f" -gt "$p_l2f" ] 2>/dev/null && tl_bad="$tl_bad layer2.fail:$p_l2f->$c_l2f"
+      if [ -n "$tl_bad" ]; then
+        tl_flagged=$((tl_flagged+1))
+        printf '  ^ REGRESSION-CANDIDATE window (%s .. %s]:%s\n' "$p_commit" "$c_commit" "$tl_bad"
+      fi
+    fi
+    prev="$cur"
+  done < "$HIST"
+  printf -- '-- timeline: %s entr(y/ies), %s regression-candidate window(s)\n' "$(grep -c . "$HIST")" "$tl_flagged"
+  exit 0
+fi
 MAN="docs/WITNESS-MANIFEST.md"
 P=0; F=0; ST=0
 pass () { P=$((P+1));  printf '  [OK]    %s\n' "$1"; }
